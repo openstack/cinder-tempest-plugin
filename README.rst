@@ -11,7 +11,7 @@ Note that this is a hard requirement.
 * Free software: Apache license
 * Documentation: http://docs.openstack.org/developer/openstack
 * Source: http://git.openstack.org/cgit/cinder-tempest-plugin
-* Bugs: http://bugs.launchpad.net/cinder_tempest_plugin
+* Bugs: http://bugs.launchpad.net/cinder-tempest-plugin
 
 Features
 --------
