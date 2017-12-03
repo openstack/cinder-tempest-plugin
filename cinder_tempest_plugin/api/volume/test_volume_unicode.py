@@ -18,6 +18,8 @@ from tempest.common import waiters
 from tempest import config
 from tempest.lib.common.utils import data_utils
 from tempest.lib.common.utils import test_utils
+from tempest.lib import decorators
+import testtools
 
 from cinder_tempest_plugin.api.volume import base
 
@@ -62,3 +64,20 @@ class CinderUnicodeTest(base.BaseVolumeTest):
         fetched_volume = result['volume']
         self.assertEqual(fetched_volume['name'],
                          self.volume_name)
+
+    @testtools.skipUnless(CONF.volume_feature_enabled.snapshot,
+                          "Cinder volume snapshots are disabled")
+    @decorators.related_bug('1393871')
+    def test_snapshot_create_volume_description_non_ascii_code(self):
+        # Create a volume with non-ascii description
+        description = u'\u05e7\u05d9\u05d9\u05e4\u05e9'
+        volume = self.create_volume(description=description)
+        vol_info = self.volumes_client.show_volume(volume['id'])['volume']
+        self.assertEqual(description, vol_info['description'])
+
+        # Create a snapshot with different non-ascii description
+        description = u'\u4e2d\u56fd\u793e\u533a'
+        snapshot = self.create_snapshot(volume['id'], description=description)
+        snapshot_info = self.snapshots_client.show_snapshot(
+            snapshot['id'])['snapshot']
+        self.assertEqual(description, snapshot_info['description'])
