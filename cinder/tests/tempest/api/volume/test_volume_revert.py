@@ -27,6 +27,12 @@ class VolumeRevertTests(volume_base.BaseVolumeTest):
     min_microversion = '3.40'
 
     @classmethod
+    def skip_checks(cls):
+        super(VolumeRevertTests, cls).skip_checks()
+        if not CONF.volume_feature_enabled.volume_revert:
+            raise cls.skipException("Cinder volume revert feature disabled")
+
+    @classmethod
     def setup_clients(cls):
         cls._api_version = 3
         super(VolumeRevertTests, cls).setup_clients()

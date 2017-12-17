@@ -19,4 +19,7 @@ cinder_option = [
     cfg.BoolOpt('consistency_group',
                 default=False,
                 help='Enable to run Cinder volume consistency group tests'),
+    cfg.BoolOpt('volume_revert',
+                default=False,
+                help='Enable to run Cinder volume revert tests'),
 ]
