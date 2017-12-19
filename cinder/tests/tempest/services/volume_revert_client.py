@@ -15,7 +15,7 @@
 
 from oslo_serialization import jsonutils as json
 from tempest.lib.common import rest_client
-from tempest.lib.services.volume.v3 import base_client
+from tempest.lib.services.volume import base_client
 
 
 class VolumeRevertClient(base_client.BaseClient):
