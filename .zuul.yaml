@@ -1,0 +1,36 @@
+- project:
+    check:
+      jobs:
+        - cinder-tempest-plugin-lvm-lio
+    gate:
+      jobs:
+        - cinder-tempest-plugin-lvm-lio
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio
+    description: |
+      Run Cinder Tempest Plugin tests
+    parent: devstack-tempest
+    required-projects:
+      - openstack-infra/devstack-gate
+      - openstack/barbican
+      - openstack/python-barbicanclient
+      - openstack/tempest
+      - openstack/os-brick
+      - openstack/cinder-tempest-plugin
+      - openstack/cinder
+    vars:
+      tempest_test_regex: (tempest\.(api|scenario)|cinder_tempest_plugin)
+      tempest_test_blacklist: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/tempest_blacklist.txt"
+      tox_envlist: 'all'
+      devstack_localrc:
+        CINDER_ISCSI_HELPER: 'lioadm'
+        TEMPEST_PLUGINS: '/opt/stack/cinder-tempest-plugin'
+      devstack_plugins:
+        barbican: 'git://git.openstack.org/openstack/barbican'
+      devstack_services:
+        barbican: true
+    irrelevant-files:
+      - ^.*\.rst$
+      - ^doc/.*$
+      - ^releasenotes/.*$
