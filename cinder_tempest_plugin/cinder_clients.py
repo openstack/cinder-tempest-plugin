@@ -15,8 +15,8 @@
 
 from tempest import config
 
-from cinder.tests.tempest.services import consistencygroups_client
-from cinder.tests.tempest.services import volume_revert_client
+from cinder_tempest_plugin.services import consistencygroups_client
+from cinder_tempest_plugin.services import volume_revert_client
 
 CONF = config.CONF
 

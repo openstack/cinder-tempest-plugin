@@ -16,7 +16,7 @@
 import cinder
 import os
 
-from cinder.tests.tempest import config as project_config
+from cinder_tempest_plugin import config as project_config
 
 from tempest import config
 from tempest.test_discover import plugins
@@ -26,7 +26,7 @@ class CinderTempestPlugin(plugins.TempestPlugin):
     def load_tests(self):
         base_path = os.path.split(os.path.dirname(
             os.path.abspath(cinder.__file__)))[0]
-        test_dir = "cinder/tests/tempest"
+        test_dir = "cinder_tempest_plugin"
         full_test_dir = os.path.join(base_path, test_dir)
         return full_test_dir, base_path
 

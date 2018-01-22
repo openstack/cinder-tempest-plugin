@@ -19,7 +19,7 @@ from tempest import config
 from tempest.lib.common.utils import data_utils
 from tempest.lib.common.utils import test_utils
 
-from cinder.tests.tempest.api.volume import base
+from cinder_tempest_plugin.api.volume import base
 
 CONF = config.CONF
 
