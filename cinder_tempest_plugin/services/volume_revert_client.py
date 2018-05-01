@@ -24,6 +24,8 @@ class VolumeRevertClient(base_client.BaseClient):
     def __init__(self, auth_provider, service, region, **kwargs):
         super(VolumeRevertClient, self).__init__(
             auth_provider, service, region, **kwargs)
+        # revert needs v3 of the volume API
+        self.api_version = 'v3'
 
     def revert_to_snapshot(self, volume, snapshot_id):
         """Revert a volume to snapshot."""

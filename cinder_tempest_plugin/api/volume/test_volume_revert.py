@@ -43,13 +43,14 @@ class VolumeRevertTests(base.BaseVolumeTest):
     def setUp(self):
         super(VolumeRevertTests, self).setUp()
         # Create volume
-        self.volume = self.create_volume(size=1)
+        self.volume = self.create_volume()
         # Create snapshot
         self.snapshot = self.create_snapshot(self.volume['id'])
 
     @decorators.idempotent_id('87b7dcb7-4950-4a3a-802c-ece55491846d')
     def test_volume_revert_to_snapshot(self):
         """Test revert to snapshot"""
+        expected_size = self.volume['size']
         # Revert to snapshot
         self.volume_revert_client.revert_to_snapshot(self.volume,
                                                      self.snapshot['id'])
@@ -61,13 +62,16 @@ class VolumeRevertTests(base.BaseVolumeTest):
             self.snapshot['id'], 'available')
         volume = self.volumes_client.show_volume(self.volume['id'])['volume']
 
-        self.assertEqual(1, volume['size'])
+        self.assertEqual(expected_size, volume['size'])
 
     @decorators.idempotent_id('4e8b0788-87fe-430d-be7a-444d7f8e0347')
     def test_volume_revert_to_snapshot_after_extended(self):
         """Test revert to snapshot after extended"""
+        # Extend volume to double the size
+        expected_size = self.volume['size'] * 2
         # Extend the volume
-        self.volumes_client.extend_volume(self.volume['id'], new_size=2)
+        self.volumes_client.extend_volume(self.volume['id'],
+                                          new_size=expected_size)
         waiters.wait_for_volume_resource_status(self.volumes_client,
                                                 self.volume['id'], 'available')
         # Revert to snapshot
@@ -80,4 +84,4 @@ class VolumeRevertTests(base.BaseVolumeTest):
             self.snapshots_client,
             self.snapshot['id'], 'available')
         volume = self.volumes_client.show_volume(self.volume['id'])['volume']
-        self.assertEqual(2, volume['size'])
+        self.assertEqual(expected_size, volume['size'])
