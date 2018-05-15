@@ -1,0 +1,10 @@
+# List of tests getting skipped
+.*\[.*\bslow\b.*\]
+.*\.*VolumesSnapshotTestJSON\.test_snapshot_backup
+.*\.*VolumesBackupsTest\.test_backup_create_attached_volume
+.*\.*VolumesBackupsTest\.test_backup_create_and_restore_to_an_existing_volume
+.*\.*VolumesBackupsTest\.test_bootable_volume_backup_and_restore
+.*\.*VolumesBackupsTest\.test_incremental_backup
+.*\.*VolumesBackupsTest\.test_volume_backup_create_get_detailed_list_restore_delete
+.*\.*VolumesBackupsTest\.test_volume_snapshot_backup
+.*\.*VolumesBackupsV39Test\.test_update_backup
