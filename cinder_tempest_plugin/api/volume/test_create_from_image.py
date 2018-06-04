@@ -26,6 +26,8 @@ class VolumeFromImageTest(base.BaseVolumeTest):
     @classmethod
     def skip_checks(cls):
         super(VolumeFromImageTest, cls).skip_checks()
+        if not CONF.service_available.glance:
+            raise cls.skipException("Glance service is disabled")
 
     @classmethod
     def create_volume_no_wait(cls, **kwargs):
