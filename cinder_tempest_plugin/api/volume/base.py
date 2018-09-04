@@ -168,3 +168,15 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
                         self.os_primary.servers_client.delete_server,
                         body['id'])
         return body
+
+
+class BaseVolumeAdminTest(BaseVolumeTest):
+    """Base test case class for all Volume Admin API tests."""
+
+    credentials = ['primary', 'admin']
+
+    @classmethod
+    def setup_clients(cls):
+        super(BaseVolumeAdminTest, cls).setup_clients()
+
+        cls.admin_volume_types_client = cls.os_admin.volume_types_client_latest
