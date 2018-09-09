@@ -1,4 +1,7 @@
 - project:
+    templates:
+      - check-requirements
+      - tempest-plugin-jobs
     check:
       jobs:
         - cinder-tempest-plugin-lvm-lio
@@ -19,13 +22,13 @@
       - openstack/cinder
     vars:
       tempest_test_regex: (tempest\.(api|scenario)|cinder_tempest_plugin)
-      tempest_test_blacklist: "{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/tempest_blacklist.txt"
-      tox_envlist: 'all'
+      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/tempest_blacklist.txt'
+      tox_envlist: all
       devstack_localrc:
-        CINDER_ISCSI_HELPER: 'lioadm'
-        TEMPEST_PLUGINS: '/opt/stack/cinder-tempest-plugin'
+        CINDER_ISCSI_HELPER: lioadm
+        TEMPEST_PLUGINS: /opt/stack/cinder-tempest-plugin
       devstack_plugins:
-        barbican: 'git://git.openstack.org/openstack/barbican'
+        barbican: git://git.openstack.org/openstack/barbican
       devstack_services:
         barbican: true
     irrelevant-files:
