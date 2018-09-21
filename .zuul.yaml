@@ -2,12 +2,10 @@
     check:
       jobs:
         - cinder-tempest-plugin-lvm-lio
-    gate:
-      jobs:
-        - cinder-tempest-plugin-lvm-lio
 
 - job:
     name: cinder-tempest-plugin-lvm-lio
+    voting: false
     description: |
       Run Cinder Tempest Plugin tests
     parent: devstack-tempest
