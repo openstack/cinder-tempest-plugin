@@ -25,7 +25,7 @@ from cinder_tempest_plugin import cinder_clients
 CONF = config.CONF
 
 
-class ConsistencyGroupsV2Test(base.BaseVolumeTest):
+class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
     @classmethod
     def setup_clients(cls):
         cls._api_version = 2
