@@ -41,6 +41,9 @@ class VolumesBackupsTest(base.BaseVolumeTest):
         backup = self.create_backup(
             volume_id=volume['id'],
             snapshot_id=snapshot['id'])
+        # Get a given backup. We need to do this to get the volume_id and
+        # snapshot_id of the backup. They are not returned by the create API.
+        backup = self.backups_client.show_backup(backup['id'])['backup']
         self.assertEqual(volume['id'], backup['volume_id'])
         self.assertEqual(snapshot['id'], backup['snapshot_id'])
 
