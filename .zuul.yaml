@@ -5,6 +5,7 @@
     check:
       jobs:
         - cinder-tempest-plugin-lvm-lio
+        - devstack-plugin-ceph-tempest
 
 - job:
     name: cinder-tempest-plugin-lvm-lio
