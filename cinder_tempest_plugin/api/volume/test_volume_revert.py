@@ -16,6 +16,7 @@
 from tempest.common import waiters
 from tempest import config
 from tempest.lib import decorators
+from tempest.lib import exceptions
 
 from cinder_tempest_plugin.api.volume import base
 from cinder_tempest_plugin import cinder_clients
@@ -65,7 +66,7 @@ class VolumeRevertTests(base.BaseVolumeTest):
         self.assertEqual(expected_size, volume['size'])
 
     @decorators.idempotent_id('4e8b0788-87fe-430d-be7a-444d7f8e0347')
-    def test_volume_revert_to_snapshot_after_extended(self):
+    def test_volume_revert_to_snapshot_after_extended_negative(self):
         """Test revert to snapshot after extended"""
         # Extend volume to double the size
         expected_size = self.volume['size'] * 2
@@ -74,14 +75,8 @@ class VolumeRevertTests(base.BaseVolumeTest):
                                           new_size=expected_size)
         waiters.wait_for_volume_resource_status(self.volumes_client,
                                                 self.volume['id'], 'available')
-        # Revert to snapshot
-        self.volume_revert_client.revert_to_snapshot(self.volume,
-                                                     self.snapshot['id'])
-        waiters.wait_for_volume_resource_status(
-            self.volumes_client,
-            self.volume['id'], 'available')
-        waiters.wait_for_volume_resource_status(
-            self.snapshots_client,
-            self.snapshot['id'], 'available')
-        volume = self.volumes_client.show_volume(self.volume['id'])['volume']
-        self.assertEqual(expected_size, volume['size'])
+
+        # Destination volume smaller than source, API should block that
+        self.assertRaises(exceptions.BadRequest,
+                          self.volume_revert_client.revert_to_snapshot,
+                          self.volume, self.snapshot)
