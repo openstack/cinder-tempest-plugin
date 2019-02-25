@@ -46,7 +46,8 @@ class VolumeRevertTests(base.BaseVolumeTest):
         # Create volume
         self.volume = self.create_volume()
         # Create snapshot
-        self.snapshot = self.create_snapshot(self.volume['id'])
+        self.snapshot = self.create_snapshot(self.volume['id'],
+                                             metadata={'mykey1': 'value1'})
 
     @decorators.idempotent_id('87b7dcb7-4950-4a3a-802c-ece55491846d')
     def test_volume_revert_to_snapshot(self):
