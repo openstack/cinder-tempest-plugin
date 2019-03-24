@@ -29,7 +29,7 @@
         CINDER_ISCSI_HELPER: lioadm
         TEMPEST_PLUGINS: /opt/stack/cinder-tempest-plugin
       devstack_plugins:
-        barbican: git://git.openstack.org/openstack/barbican
+        barbican: https://git.openstack.org/openstack/barbican
       devstack_services:
         barbican: true
     irrelevant-files:
