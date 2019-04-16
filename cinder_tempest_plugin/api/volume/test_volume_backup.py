@@ -67,6 +67,29 @@ class VolumesBackupsTest(base.BaseVolumeTest):
         self.assertEqual(src_vol['id'], restore['volume_id'])
         self.assertEqual(backup['id'], restore['backup_id'])
 
+    @decorators.idempotent_id('b5d837b0-7066-455d-88fc-4a721a899306')
+    def test_incr_backup_create_and_restore_to_an_existing_volume(self):
+        """Test incr backup create and restore to an existing volume."""
+        # Create volume
+        src_vol = self.create_volume()
+        # Create a full backup
+        self.create_backup(volume_id=src_vol['id'])
+        # Create an inc backup
+        backup = self.create_backup(volume_id=src_vol['id'],
+                                    incremental=True)
+        # Restore to existing volume
+        restore = self.backups_client.restore_backup(
+            backup_id=backup['id'],
+            volume_id=src_vol['id'])['restore']
+        waiters.wait_for_volume_resource_status(
+            self.backups_client,
+            backup['id'], 'available')
+        waiters.wait_for_volume_resource_status(
+            self.volumes_client,
+            src_vol['id'], 'available')
+        self.assertEqual(src_vol['id'], restore['volume_id'])
+        self.assertEqual(backup['id'], restore['backup_id'])
+
     @decorators.idempotent_id('c810fe2c-cb40-43ab-96aa-471b74516a98')
     def test_incremental_backup(self):
         """Test create incremental backup."""
