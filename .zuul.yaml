@@ -14,7 +14,7 @@
       Run Cinder Tempest Plugin tests
     parent: devstack-tempest
     required-projects:
-      - openstack-infra/devstack-gate
+      - openstack/devstack-gate
       - openstack/barbican
       - openstack/python-barbicanclient
       - openstack/tempest
@@ -29,7 +29,7 @@
         CINDER_ISCSI_HELPER: lioadm
         TEMPEST_PLUGINS: /opt/stack/cinder-tempest-plugin
       devstack_plugins:
-        barbican: https://git.openstack.org/openstack/barbican
+        barbican: https://opendev.org/openstack/barbican
       devstack_services:
         barbican: true
     irrelevant-files:
