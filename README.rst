@@ -10,10 +10,10 @@ https://docs.openstack.org/tempest/latest/plugin.html#using-plugins
 To run all tests from this plugin, install cinder into your environment. Then
 from the tempest directory run::
 
-    $ tox -e all-plugin -- volume
+    $ tox -e all -- cinder_tempest_plugin
 
 
-It is expected that Cinder third party CI's use the all-plugin tox environment
+It is expected that Cinder third party CI's use the `all` tox environment
 above for all test runs. Developers can also use this locally to perform more
 extensive testing.
 
