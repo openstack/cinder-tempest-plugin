@@ -20,7 +20,6 @@ from tempest import config
 from tempest.lib.common import api_version_utils
 from tempest.lib.common.utils import data_utils
 from tempest.lib.common.utils import test_utils
-from tempest.lib import exceptions
 from tempest import test
 
 CONF = config.CONF
@@ -30,7 +29,6 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
                      test.BaseTestCase):
     """Base test case class for all Cinder API tests."""
 
-    _api_version = 2
     credentials = ['primary']
 
     @classmethod
@@ -40,17 +38,6 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
         if not CONF.service_available.cinder:
             skip_msg = ("%s skipped as Cinder is not available" % cls.__name__)
             raise cls.skipException(skip_msg)
-        if cls._api_version == 2:
-            if not CONF.volume_feature_enabled.api_v2:
-                msg = "Volume API v2 is disabled"
-                raise cls.skipException(msg)
-        elif cls._api_version == 3:
-            if not CONF.volume_feature_enabled.api_v3:
-                msg = "Volume API v3 is disabled"
-                raise cls.skipException(msg)
-        else:
-            msg = ("Invalid Cinder API version (%s)" % cls._api_version)
-            raise exceptions.InvalidConfiguration(msg)
 
         api_version_utils.check_skip_with_microversion(
             cls.min_microversion, cls.max_microversion,
@@ -59,14 +46,9 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
     @classmethod
     def setup_clients(cls):
         super(BaseVolumeTest, cls).setup_clients()
-        if cls._api_version == 3:
-            cls.backups_client = cls.os_primary.backups_v3_client
-            cls.volumes_client = cls.os_primary.volumes_v3_client
-        else:
-            cls.backups_client = cls.os_primary.backups_v2_client
-            cls.volumes_client = cls.os_primary.volumes_v2_client
-
-        cls.snapshots_client = cls.os_primary.snapshots_v2_client
+        cls.backups_client = cls.os_primary.backups_client_latest
+        cls.volumes_client = cls.os_primary.volumes_client_latest
+        cls.snapshots_client = cls.os_primary.snapshots_client_latest
 
     @classmethod
     def setup_credentials(cls):
