@@ -28,6 +28,7 @@
       devstack_localrc:
         CINDER_ISCSI_HELPER: lioadm
         TEMPEST_PLUGINS: /opt/stack/cinder-tempest-plugin
+        USE_PYTHON3: true
       devstack_plugins:
         barbican: https://opendev.org/openstack/barbican
       devstack_services:
