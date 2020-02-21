@@ -4,35 +4,48 @@
       - tempest-plugin-jobs
     check:
       jobs:
-        - cinder-tempest-plugin-lvm-lio
+        - cinder-tempest-plugin-lvm-lio-barbican
+        - devstack-plugin-ceph-tempest-py3
+    gate:
+      jobs:
+        - cinder-tempest-plugin-lvm-lio-barbican
         - devstack-plugin-ceph-tempest-py3
 
 - job:
-    name: cinder-tempest-plugin-lvm-lio
-    voting: false
+    name: cinder-tempest-plugin-lvm-lio-barbican
     description: |
-      Run Cinder Tempest Plugin tests
+      This jobs configures Cinder with LVM, LIO, barbican and
+      runs tempest tests and cinderlib tests.
     parent: devstack-tempest
+    roles:
+      - zuul: opendev.org/openstack/cinderlib
     required-projects:
-      - openstack/devstack-gate
-      - openstack/barbican
-      - openstack/python-barbicanclient
-      - openstack/tempest
-      - openstack/os-brick
-      - openstack/cinder-tempest-plugin
-      - openstack/cinder
+      - opendev.org/openstack/barbican
+      - opendev.org/openstack/tempest
+      - opendev.org/openstack/cinder-tempest-plugin
+      - opendev.org/openstack/cinder
+      - opendev.org/openstack/cinderlib
+    run: playbooks/tempest-and-cinderlib-run.yaml
+    # Required to collect the tox-based logs of the cinderlib functional tests
+    post-run: playbooks/post-cinderlib.yaml
+    host-vars:
+      controller:
+        devstack_plugins:
+          barbican: https://opendev.org/openstack/barbican
     vars:
-      tempest_test_regex: (tempest\.(api|scenario)|cinder_tempest_plugin)
-      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.project.src_dir }}/tempest_blacklist.txt'
+      tempest_test_regex: '(^tempest\.(api|scenario\.test_encrypted_cinder_volumes|scenario\.test_volume|scenario\.test_shelve_instance)|(^cinder_tempest_plugin))'
+      tempest_test_blacklist: "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinder-tempest-plugin'].src_dir }}/tempest_blacklist.txt"
       tox_envlist: all
       devstack_localrc:
         CINDER_ISCSI_HELPER: lioadm
-        TEMPEST_PLUGINS: /opt/stack/cinder-tempest-plugin
-        USE_PYTHON3: true
-      devstack_plugins:
-        barbican: https://opendev.org/openstack/barbican
+        CINDER_LVM_TYPE: thin
+        CINDER_COORDINATION_URL: 'file://\$state_path'
       devstack_services:
         barbican: true
+      tempest_plugins:
+        - cinder-tempest-plugin
+      fetch_subunit_output_additional_dirs:
+        - "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$

@@ -1,0 +1,6 @@
+- name: Change the owner of specific devstack data files
+  file:
+    path: "{{ devstack_data_dir }}/{{ devstack_data_subdir_changed }}"
+    owner: "{{ devstack_data_subdir_owner }}"
+    recurse: yes
+  become: yes

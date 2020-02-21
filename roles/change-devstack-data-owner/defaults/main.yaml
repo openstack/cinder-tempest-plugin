@@ -1,0 +1,3 @@
+devstack_data_dir: /opt/stack/data
+devstack_data_subdir_changed: cinder
+devstack_data_subdir_owner: zuul
