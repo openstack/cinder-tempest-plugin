@@ -5,11 +5,11 @@
     check:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
-        - devstack-plugin-ceph-tempest-py3
+        - cinder-tempest-plugin-cbak-ceph
     gate:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
-        - devstack-plugin-ceph-tempest-py3
+        - cinder-tempest-plugin-cbak-ceph
 
 - job:
     name: cinder-tempest-plugin-lvm-lio-barbican
@@ -33,8 +33,8 @@
         devstack_plugins:
           barbican: https://opendev.org/openstack/barbican
     vars:
-      tempest_test_regex: '(^tempest\.(api|scenario\.test_encrypted_cinder_volumes|scenario\.test_volume|scenario\.test_shelve_instance)|(^cinder_tempest_plugin))'
-      tempest_test_blacklist: "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinder-tempest-plugin'].src_dir }}/tempest_blacklist.txt"
+      tempest_test_regex: '(^tempest\.(api|scenario)|(^cinder_tempest_plugin))'
+      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-blacklist.txt'
       tox_envlist: all
       devstack_localrc:
         CINDER_ISCSI_HELPER: lioadm
@@ -50,3 +50,13 @@
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+
+- job:
+    name: cinder-tempest-plugin-cbak-ceph
+    parent: devstack-plugin-ceph-tempest-py3
+    description: |
+      Integration tests that runs with the ceph devstack plugin, py3
+      and enable the backup service.
+    vars:
+      devstack_services:
+        c-bak: true
