@@ -19,10 +19,15 @@
     - setup-tempest-data-dir
     - acl-devstack-files
     - role: run-tempest
-      # ignore the errors, so that run-cinderlib-tests is always executed
+      # ignore the errors for now, so that run-cinderlib-tests is always executed
       ignore_errors: yes
     - role: change-devstack-data-owner
       devstack_data_subdir_changed: cinder
       devstack_data_subdir_owner: zuul
     - role: run-cinderlib-tests
       cinderlib_base_dir: "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
+  post_tasks:
+    - name: Fail if the first tempest run did not work
+      fail:
+         msg: "tempest run returned with an error"
+      when: tempest_run_result is defined and tempest_run_result.rc != 0
