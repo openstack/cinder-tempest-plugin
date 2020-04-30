@@ -18,6 +18,7 @@
     description: |
       This is a base job for lvm with lio & tgt targets
     parent: devstack-tempest
+    timeout: 10800
     roles:
       - zuul: opendev.org/openstack/cinderlib
     required-projects:
@@ -40,6 +41,11 @@
       devstack_localrc:
         CINDER_LVM_TYPE: thin
         CINDER_COORDINATION_URL: 'file://\$state_path'
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            volume-feature-enabled:
+              volume_revert: True
       devstack_services:
         barbican: true
       tempest_plugins:
@@ -58,8 +64,25 @@
       Integration tests that runs with the ceph devstack plugin, py3
       and enable the backup service.
     vars:
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            volume-feature-enabled:
+              volume_revert: True
       devstack_services:
         c-bak: true
+
+# variant for pre-Ussuri branches (no volume revert for Ceph),
+# should this job be used on those branches
+- job:
+    name: cinder-tempest-plugin-cbak-ceph
+    branches: ^(?=stable/(ocata|pike|queens|rocky|stein|train)).*$
+    vars:
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            volume-feature-enabled:
+              volume_revert: False
 
 - job:
     name: cinder-tempest-plugin-lvm-lio-barbican
