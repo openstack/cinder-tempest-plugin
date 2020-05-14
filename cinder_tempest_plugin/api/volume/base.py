@@ -164,3 +164,4 @@ class BaseVolumeAdminTest(BaseVolumeTest):
         super(BaseVolumeAdminTest, cls).setup_clients()
 
         cls.admin_volume_types_client = cls.os_admin.volume_types_client_latest
+        cls.admin_backups_client = cls.os_admin.backups_client_latest
