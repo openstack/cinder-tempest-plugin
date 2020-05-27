@@ -5,6 +5,8 @@
     check:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
+        - cinder-tempest-plugin-lvm-lio-barbican-centos-8:
+            voting: false
         - cinder-tempest-plugin-lvm-tgt-barbican
         - cinder-tempest-plugin-cbak-ceph
     gate:
@@ -93,6 +95,14 @@
     vars:
       devstack_localrc:
         CINDER_ISCSI_HELPER: lioadm
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-centos-8
+    parent: cinder-tempest-plugin-lvm-lio-barbican
+    nodeset: devstack-single-node-centos-8
+    description: |
+      This jobs configures Cinder with LVM, LIO, barbican and
+      runs tempest tests and cinderlib tests on CentOS 8.
 
 - job:
     name: cinder-tempest-plugin-lvm-tgt-barbican
