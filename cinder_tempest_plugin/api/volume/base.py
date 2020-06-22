@@ -165,3 +165,37 @@ class BaseVolumeAdminTest(BaseVolumeTest):
 
         cls.admin_volume_types_client = cls.os_admin.volume_types_client_latest
         cls.admin_backups_client = cls.os_admin.backups_client_latest
+        cls.admin_volumes_client = cls.os_admin.volumes_client_latest
+
+    @classmethod
+    def create_volume_type(cls, name=None, **kwargs):
+        """Create a test volume-type"""
+
+        name = name or data_utils.rand_name(cls.__name__ + '-volume-type')
+        volume_type = cls.admin_volume_types_client.create_volume_type(
+            name=name, **kwargs)['volume_type']
+        cls.addClassResourceCleanup(cls._clear_volume_type, volume_type)
+        return volume_type
+
+    @classmethod
+    def _clear_volume_type(cls, volume_type):
+        # If image caching is enabled, we must delete the cached volume
+        # before cinder will allow us to delete the volume_type.  This function
+        # solves that problem by taking the brute-force approach of deleting
+        # any volumes of this volume_type that exist *no matter what project
+        # they are in*.  Since this won't happen until the teardown of the
+        # test class, that should be OK.
+        type_id = volume_type['id']
+        type_name = volume_type['name']
+
+        volumes = cls.admin_volumes_client.list_volumes(
+            detail=True, params={'all_tenants': 1})['volumes']
+        for volume in [v for v in volumes if v['volume_type'] == type_name]:
+            test_utils.call_and_ignore_notfound_exc(
+                cls.admin_volumes_client.delete_volume, volume['id'])
+            cls.admin_volumes_client.wait_for_resource_deletion(volume['id'])
+
+        test_utils.call_and_ignore_notfound_exc(
+            cls.admin_volume_types_client.delete_volume_type, type_id)
+        test_utils.call_and_ignore_notfound_exc(
+            cls.admin_volume_types_client.wait_for_resource_deletion, type_id)
