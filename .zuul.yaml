@@ -69,6 +69,7 @@
       Integration tests that runs with the ceph devstack plugin, py3
       and enable the backup service.
     vars:
+      tempest_black_regex: '(VolumesBackupsTest.test_bootable_volume_backup_and_restore|TestVolumeBackupRestore.test_volume_backup_restore)'
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
@@ -83,6 +84,7 @@
     name: cinder-tempest-plugin-cbak-ceph
     branches: ^(?=stable/(ocata|pike|queens|rocky|stein|train)).*$
     vars:
+      tempest_black_regex: ''
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
