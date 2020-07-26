@@ -23,6 +23,12 @@
     description: |
       This is a base job for lvm with lio & tgt targets
     parent: devstack-tempest
+    # TODO(gmann): Remove the below nodeset setting to Bionic once
+    # https://storyboard.openstack.org/#!/story/2007732 is fixed
+    # Once nodeset is removed form here then devstack-tempest job
+    # will automatically run this job on Ubuntu Focal nodeset from
+    # Victoria gate onwards.
+    nodeset: openstack-single-node-bionic
     timeout: 10800
     roles:
       - zuul: opendev.org/openstack/cinderlib
@@ -139,11 +145,13 @@
 - job:
     name: cinder-tempest-plugin-basic-ussuri
     parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-bionic
     override-checkout: stable/ussuri
 
 - job:
     name: cinder-tempest-plugin-basic-train
     parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-bionic
     override-checkout: stable/train
     vars:
       devstack_localrc:
@@ -152,6 +160,7 @@
 - job:
     name: cinder-tempest-plugin-basic-stein
     parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-bionic
     override-checkout: stable/stein
     vars:
       devstack_localrc:
