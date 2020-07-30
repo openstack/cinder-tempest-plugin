@@ -18,9 +18,10 @@ import time
 
 from oslo_serialization import jsonutils as json
 from six.moves import http_client
-from tempest import exceptions
 from tempest.lib.common import rest_client
 from tempest.lib import exceptions as lib_exc
+
+from cinder_tempest_plugin import exceptions as volume_exc
 
 
 class ConsistencyGroupsClient(rest_client.RestClient):
@@ -137,14 +138,14 @@ class ConsistencyGroupsClient(rest_client.RestClient):
             body = self.show_consistencygroup(cg_id)['consistencygroup']
             cg_status = body['status']
             if cg_status == 'error':
-                raise exceptions.ConsistencyGroupException(cg_id=cg_id)
+                raise volume_exc.ConsistencyGroupException(cg_id=cg_id)
 
             if int(time.time()) - start >= self.build_timeout:
                 message = ('Consistency group %s failed to reach %s status '
                            '(current %s) within the required time (%s s).' %
                            (cg_id, status, cg_status,
                             self.build_timeout))
-                raise exceptions.TimeoutException(message)
+                raise lib_exc.TimeoutException(message)
 
     def wait_for_consistencygroup_deletion(self, cg_id):
         """Waits for consistency group deletion"""
@@ -155,7 +156,7 @@ class ConsistencyGroupsClient(rest_client.RestClient):
             except lib_exc.NotFound:
                 return
             if int(time.time()) - start_time >= self.build_timeout:
-                raise exceptions.TimeoutException
+                raise lib_exc.TimeoutException
             time.sleep(self.build_interval)
 
     def wait_for_cgsnapshot_status(self, cgsnapshot_id, status):
@@ -169,7 +170,7 @@ class ConsistencyGroupsClient(rest_client.RestClient):
             body = self.show_cgsnapshot(cgsnapshot_id)['cgsnapshot']
             cgsnapshot_status = body['status']
             if cgsnapshot_status == 'error':
-                raise exceptions.ConsistencyGroupSnapshotException(
+                raise volume_exc.ConsistencyGroupSnapshotException(
                     cgsnapshot_id=cgsnapshot_id)
 
             if int(time.time()) - start >= self.build_timeout:
@@ -178,7 +179,7 @@ class ConsistencyGroupsClient(rest_client.RestClient):
                            '(%s s).' %
                            (cgsnapshot_id, status, cgsnapshot_status,
                             self.build_timeout))
-                raise exceptions.TimeoutException(message)
+                raise lib_exc.TimeoutException(message)
 
     def wait_for_cgsnapshot_deletion(self, cgsnapshot_id):
         """Waits for consistency group snapshot deletion"""
@@ -189,5 +190,5 @@ class ConsistencyGroupsClient(rest_client.RestClient):
             except lib_exc.NotFound:
                 return
             if int(time.time()) - start_time >= self.build_timeout:
-                raise exceptions.TimeoutException
+                raise lib_exc.TimeoutException
             time.sleep(self.build_interval)
