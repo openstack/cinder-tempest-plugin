@@ -9,9 +9,9 @@
             voting: false
         - cinder-tempest-plugin-lvm-tgt-barbican
         - cinder-tempest-plugin-cbak-ceph
+        - cinder-tempest-plugin-basic-victoria
         - cinder-tempest-plugin-basic-ussuri
         - cinder-tempest-plugin-basic-train
-        - cinder-tempest-plugin-basic-stein
     gate:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
@@ -137,6 +137,12 @@
       - ^releasenotes/.*$
 
 - job:
+    name: cinder-tempest-plugin-basic-victoria
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-focal
+    override-checkout: stable/victoria
+
+- job:
     name: cinder-tempest-plugin-basic-ussuri
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-bionic
@@ -147,15 +153,6 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-bionic
     override-checkout: stable/train
-    vars:
-      devstack_localrc:
-        USE_PYTHON3: True
-
-- job:
-    name: cinder-tempest-plugin-basic-stein
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-bionic
-    override-checkout: stable/stein
     vars:
       devstack_localrc:
         USE_PYTHON3: True
