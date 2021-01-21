@@ -38,10 +38,9 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
         super(TestEncryptedCinderVolumes, cls).resource_cleanup()
 
     def launch_instance(self):
-        image = self.image_create()
         keypair = self.create_keypair()
 
-        return self.create_server(image_id=image, key_name=keypair['name'])
+        return self.create_server(key_name=keypair['name'])
 
     def attach_detach_volume(self, server, volume):
         attached_volume = self.nova_volume_attach(server, volume)
