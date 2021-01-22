@@ -11,6 +11,7 @@
         - nova-ceph-multistore:
             voting: false
         - cinder-tempest-plugin-cbak-ceph
+        - cinder-tempest-plugin-cbak-s3
         - cinder-tempest-plugin-basic-wallaby
         - cinder-tempest-plugin-basic-victoria
         - cinder-tempest-plugin-basic-ussuri
@@ -172,6 +173,21 @@
       devstack_localrc:
         CINDER_ISCSI_HELPER: tgtadm
 
+- job:
+    name: cinder-tempest-plugin-cbak-s3
+    parent: cinder-tempest-plugin-basic
+    description: |
+      Integration tests that runs with the s3 backup driver with
+      Swift S3 API.
+    vars:
+      devstack_localrc:
+        CINDER_BACKUP_DRIVER: 's3_swift'
+      devstack_services:
+        c-bak: true
+        s3api: true
+        # Workaround: TLS proxy seems to cause S3 signature mismatch.
+        tls-proxy: false
+      tempest_test_regex: '(test_volume_backup|test_volumes_backup|test_snapshot_backup)'
 - job:
     name: cinder-tempest-plugin-basic
     parent: devstack-tempest
