@@ -41,7 +41,7 @@
           barbican: https://opendev.org/openstack/barbican
     vars:
       tempest_test_regex: '(^tempest\.(api|scenario)|(^cinder_tempest_plugin))'
-      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-blacklist.txt'
+      tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
       tox_envlist: all
       devstack_localrc:
         CINDER_LVM_TYPE: thin
@@ -69,7 +69,7 @@
       Integration tests that runs with the ceph devstack plugin, py3
       and enable the backup service.
     vars:
-      tempest_black_regex: '(VolumesBackupsTest.test_bootable_volume_backup_and_restore|TestVolumeBackupRestore.test_volume_backup_restore)'
+      tempest_exclude_regex: '(VolumesBackupsTest.test_bootable_volume_backup_and_restore|TestVolumeBackupRestore.test_volume_backup_restore)'
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
@@ -84,7 +84,7 @@
     name: cinder-tempest-plugin-cbak-ceph
     branches: ^(?=stable/(ocata|pike|queens|rocky|stein|train)).*$
     vars:
-      tempest_black_regex: ''
+      tempest_exclude_regex: ''
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
