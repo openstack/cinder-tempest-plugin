@@ -57,6 +57,7 @@ class CinderUnicodeTest(base.BaseVolumeTest):
 
         return volume
 
+    @decorators.idempotent_id('2d7e2e49-150e-4849-a18e-79f9777c9a96')
     def test_create_delete_unicode_volume_name(self):
         """Create a volume with a unicode name and view it."""
 
@@ -68,6 +69,7 @@ class CinderUnicodeTest(base.BaseVolumeTest):
     @testtools.skipUnless(CONF.volume_feature_enabled.snapshot,
                           "Cinder volume snapshots are disabled")
     @decorators.related_bug('1393871')
+    @decorators.idempotent_id('332be44d-5418-4fb3-a8f0-a3587de6929f')
     def test_snapshot_create_volume_description_non_ascii_code(self):
         # Create a volume with non-ascii description
         description = u'\u05e7\u05d9\u05d9\u05e4\u05e9'
