@@ -49,6 +49,10 @@
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
+            auth:
+              # FIXME: 'creator' should be re-added by the barbican devstack plugin
+              # but the value below override everything.
+              tempest_roles: member,creator
             volume-feature-enabled:
               volume_revert: True
       devstack_services:
