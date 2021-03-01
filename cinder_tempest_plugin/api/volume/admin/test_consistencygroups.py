@@ -78,20 +78,20 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
+        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+            cg['id'], 'available')
+        self.assertEqual(cg_name, cg['name'])
+
+        # Create volume
         vol_name = data_utils.rand_name("volume")
         params = {'name': vol_name,
                   'volume_type': volume_type['id'],
                   'consistencygroup_id': cg['id'],
                   'size': CONF.volume.volume_size}
 
-        # Create volume
         volume = self.admin_volume_client.create_volume(**params)['volume']
-
         waiters.wait_for_volume_resource_status(self.admin_volume_client,
                                                 volume['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
-            cg['id'], 'available')
-        self.assertEqual(cg_name, cg['name'])
 
         # Get a given CG
         cg = self.consistencygroups_adm_client.show_consistencygroup(
@@ -122,19 +122,19 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
+        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+            cg['id'], 'available')
+        self.assertEqual(cg_name, cg['name'])
+
+        # Create volume
         vol_name = data_utils.rand_name("volume")
         params = {'name': vol_name,
                   'volume_type': volume_type['id'],
                   'consistencygroup_id': cg['id'],
                   'size': CONF.volume.volume_size}
-
-        # Create volume
         volume = self.admin_volume_client.create_volume(**params)['volume']
         waiters.wait_for_volume_resource_status(self.admin_volume_client,
                                                 volume['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
-            cg['id'], 'available')
-        self.assertEqual(cg_name, cg['name'])
 
         # Create cgsnapshot
         cgsnapshot_name = data_utils.rand_name('cgsnapshot')
@@ -142,6 +142,9 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_cgsnapshot)
         cgsnapshot = create_cgsnapshot(cg['id'],
                                        name=cgsnapshot_name)['cgsnapshot']
+        self.consistencygroups_adm_client.wait_for_cgsnapshot_status(
+            cgsnapshot['id'], 'available')
+        self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
         snapshots = self.os_admin.snapshots_v2_client.list_snapshots(
             detail=True)['snapshots']
         for snap in snapshots:
@@ -149,9 +152,6 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
                 waiters.wait_for_volume_resource_status(
                     self.os_admin.snapshots_v2_client,
                     snap['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_cgsnapshot_status(
-            cgsnapshot['id'], 'available')
-        self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
 
         # Get a given CG snapshot
         cgsnapshot = self.consistencygroups_adm_client.show_cgsnapshot(
@@ -182,19 +182,19 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
+        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+            cg['id'], 'available')
+        self.assertEqual(cg_name, cg['name'])
+
+        # Create volume
         vol_name = data_utils.rand_name("volume")
         params = {'name': vol_name,
                   'volume_type': volume_type['id'],
                   'consistencygroup_id': cg['id'],
                   'size': CONF.volume.volume_size}
-
-        # Create volume
         volume = self.admin_volume_client.create_volume(**params)['volume']
         waiters.wait_for_volume_resource_status(self.admin_volume_client,
                                                 volume['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
-            cg['id'], 'available')
-        self.assertEqual(cg_name, cg['name'])
 
         # Create cgsnapshot
         cgsnapshot_name = data_utils.rand_name('cgsnapshot')
@@ -202,15 +202,15 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_cgsnapshot)
         cgsnapshot = create_cgsnapshot(cg['id'],
                                        name=cgsnapshot_name)['cgsnapshot']
+        self.consistencygroups_adm_client.wait_for_cgsnapshot_status(
+            cgsnapshot['id'], 'available')
+        self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
         snapshots = self.snapshots_client.list_snapshots(
             detail=True)['snapshots']
         for snap in snapshots:
             if volume['id'] == snap['volume_id']:
                 waiters.wait_for_volume_resource_status(
                     self.os_admin.snapshots_v2_client, snap['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_cgsnapshot_status(
-            cgsnapshot['id'], 'available')
-        self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
 
         # Create CG from CG snapshot
         cg_name2 = data_utils.rand_name('CG_from_snap')
@@ -218,15 +218,15 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_consistencygroup_from_src)
         cg2 = create_consistencygroup2(cgsnapshot_id=cgsnapshot['id'],
                                        name=cg_name2)['consistencygroup']
+        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+            cg2['id'], 'available')
+        self.assertEqual(cg_name2, cg2['name'])
         vols = self.admin_volume_client.list_volumes(
             detail=True)['volumes']
         for vol in vols:
             if vol['consistencygroup_id'] == cg2['id']:
                 waiters.wait_for_volume_resource_status(
                     self.admin_volume_client, vol['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
-            cg2['id'], 'available')
-        self.assertEqual(cg_name2, cg2['name'])
 
         # Clean up
         self._delete_consistencygroup(cg2['id'])
@@ -247,19 +247,19 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
+        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+            cg['id'], 'available')
+        self.assertEqual(cg_name, cg['name'])
+
+        # Create volume
         vol_name = data_utils.rand_name("volume")
         params = {'name': vol_name,
                   'volume_type': volume_type['id'],
                   'consistencygroup_id': cg['id'],
                   'size': CONF.volume.volume_size}
-
-        # Create volume
         volume = self.admin_volume_client.create_volume(**params)['volume']
         waiters.wait_for_volume_resource_status(self.admin_volume_client,
                                                 volume['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
-            cg['id'], 'available')
-        self.assertEqual(cg_name, cg['name'])
 
         # Create CG from CG
         cg_name2 = data_utils.rand_name('CG_from_cg')
@@ -267,15 +267,15 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
             self.consistencygroups_adm_client.create_consistencygroup_from_src)
         cg2 = create_consistencygroup2(source_cgid=cg['id'],
                                        name=cg_name2)['consistencygroup']
+        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+            cg2['id'], 'available')
+        self.assertEqual(cg_name2, cg2['name'])
         vols = self.admin_volume_client.list_volumes(
             detail=True)['volumes']
         for vol in vols:
             if vol['consistencygroup_id'] == cg2['id']:
                 waiters.wait_for_volume_resource_status(
                     self.admin_volume_client, vol['id'], 'available')
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
-            cg2['id'], 'available')
-        self.assertEqual(cg_name2, cg2['name'])
 
         # Clean up
         self._delete_consistencygroup(cg2['id'])
