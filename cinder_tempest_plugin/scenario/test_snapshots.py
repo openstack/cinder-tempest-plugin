@@ -13,9 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from cinder_tempest_plugin.scenario import manager
 from tempest.common import utils
 from tempest.lib import decorators
+
+from cinder_tempest_plugin.scenario import manager
 
 
 class SnapshotDataIntegrityTests(manager.ScenarioTest):
