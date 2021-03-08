@@ -19,6 +19,11 @@
         - cinder-tempest-plugin-lvm-lio-barbican
         - cinder-tempest-plugin-lvm-tgt-barbican
         - cinder-tempest-plugin-cbak-ceph
+    experimental:
+      jobs:
+        - cinder-tempest-plugin-cbak-ceph-victoria
+        - cinder-tempest-plugin-cbak-ceph-ussuri
+        - cinder-tempest-plugin-cbak-ceph-train
 
 - job:
     name: cinder-tempest-plugin-lvm-barbican-base
@@ -75,7 +80,6 @@
       Integration tests that runs with the ceph devstack plugin, py3
       and enable the backup service.
     vars:
-      tempest_exclude_regex: '(VolumesBackupsTest.test_bootable_volume_backup_and_restore|TestVolumeBackupRestore.test_volume_backup_restore)'
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
@@ -84,13 +88,30 @@
       devstack_services:
         c-bak: true
 
+- job:
+    name: cinder-tempest-plugin-cbak-ceph-victoria
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-focal
+    override-checkout: stable/victoria
+
+- job:
+    name: cinder-tempest-plugin-cbak-ceph-ussuri
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-bionic
+    override-checkout: stable/ussuri
+
+- job:
+    name: cinder-tempest-plugin-cbak-ceph-train
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-bionic
+    override-checkout: stable/train
+
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
 - job:
     name: cinder-tempest-plugin-cbak-ceph
     branches: ^(?=stable/(ocata|pike|queens|rocky|stein|train)).*$
     vars:
-      tempest_exclude_regex: ''
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
