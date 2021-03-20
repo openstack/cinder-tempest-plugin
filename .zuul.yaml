@@ -8,6 +8,8 @@
         - cinder-tempest-plugin-lvm-lio-barbican-centos-8:
             voting: false
         - cinder-tempest-plugin-lvm-tgt-barbican
+        - nova-ceph-multistore:
+            voting: false
         - cinder-tempest-plugin-cbak-ceph
         - cinder-tempest-plugin-basic-victoria
         - cinder-tempest-plugin-basic-ussuri
