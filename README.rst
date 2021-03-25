@@ -24,7 +24,6 @@ work. Update backend information to fit your environment.
 ::
 
     [[local|localrc]]
-    VIRT_DRIVER=libvirt
     ADMIN_PASSWORD=secret
     SERVICE_TOKEN=$ADMIN_PASSWORD
     MYSQL_PASSWORD=$ADMIN_PASSWORD
@@ -35,8 +34,8 @@ work. Update backend information to fit your environment.
     SYSLOG=False
     LOG_COLOR=False
     RECLONE=yes
-    ENABLED_SERVICES=c-api,c-sch,c-vol,cinder,dstat,g-api,g-reg,key,mysql,
-                     n-api,n-cond,n-cpu,n-crt,n-net,n-sch,rabbit,tempest
+    ENABLED_SERVICES=c-api,c-bak,c-sch,c-vol,cinder,dstat,g-api,g-reg,key
+    ENABLED_SERVICES+=,mysql,n-api,n-cond,n-cpu,n-crt,n-sch,rabbit,tempest
     CINDER_ENABLED_BACKENDS=lvmdriver-1
     CINDER_DEFAULT_VOLUME_TYPE=lvmdriver-1
     CINDER_VOLUME_CLEAR=none
