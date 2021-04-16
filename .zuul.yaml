@@ -26,22 +26,17 @@
         - cinder-tempest-plugin-cbak-ceph-train
 
 - job:
-    name: cinder-tempest-plugin-lvm-barbican-base
+    name: cinder-tempest-plugin-lvm-barbican-base-abstract
     description: |
       This is a base job for lvm with lio & tgt targets
     parent: devstack-tempest
+    abstract: true
     timeout: 10800
-    roles:
-      - zuul: opendev.org/openstack/cinderlib
     required-projects:
       - opendev.org/openstack/barbican
       - opendev.org/openstack/tempest
       - opendev.org/openstack/cinder-tempest-plugin
       - opendev.org/openstack/cinder
-      - opendev.org/openstack/cinderlib
-    run: playbooks/tempest-and-cinderlib-run.yaml
-    # Required to collect the tox-based logs of the cinderlib functional tests
-    post-run: playbooks/post-cinderlib.yaml
     host-vars:
       controller:
         devstack_plugins:
@@ -66,12 +61,35 @@
         barbican: true
       tempest_plugins:
         - cinder-tempest-plugin
-      fetch_subunit_output_additional_dirs:
-        - "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
     irrelevant-files:
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+
+- job:
+    name: cinder-tempest-plugin-lvm-barbican-base
+    description: |
+      This is a base job for lvm with lio & tgt targets
+      with cinderlib tests.
+    branches: ^(?!stable/(ocata|pike|queens|rocky|stein)).*$
+    parent: cinder-tempest-plugin-lvm-barbican-base-abstract
+    roles:
+      - zuul: opendev.org/openstack/cinderlib
+    required-projects:
+      - opendev.org/openstack/cinderlib
+    run: playbooks/tempest-and-cinderlib-run.yaml
+    # Required to collect the tox-based logs of the cinderlib functional tests
+    post-run: playbooks/post-cinderlib.yaml
+    vars:
+      fetch_subunit_output_additional_dirs:
+        - "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
+
+- job:
+    name: cinder-tempest-plugin-lvm-barbican-base
+    description: |
+      This is a base job for lvm with lio & tgt targets
+    branches: ^(?=stable/(ocata|pike|queens|rocky|stein)).*$
+    parent: cinder-tempest-plugin-lvm-barbican-base-abstract
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph
