@@ -43,7 +43,6 @@
           barbican: https://opendev.org/openstack/barbican
     vars:
       tempest_test_regex: '(^tempest\.(api|scenario)|(^cinder_tempest_plugin))'
-      tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
       tox_envlist: all
       devstack_localrc:
         CINDER_LVM_TYPE: thin
@@ -83,6 +82,7 @@
     vars:
       fetch_subunit_output_additional_dirs:
         - "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
+      tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
 
 - job:
     name: cinder-tempest-plugin-lvm-barbican-base
@@ -90,6 +90,8 @@
       This is a base job for lvm with lio & tgt targets
     branches: ^(?=stable/(ocata|pike|queens|rocky|stein)).*$
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
+    vars:
+      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-blacklist.txt'
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph
