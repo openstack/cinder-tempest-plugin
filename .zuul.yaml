@@ -11,6 +11,7 @@
         - nova-ceph-multistore:
             voting: false
         - cinder-tempest-plugin-cbak-ceph
+        - cinder-tempest-plugin-basic-wallaby
         - cinder-tempest-plugin-basic-victoria
         - cinder-tempest-plugin-basic-ussuri
         - cinder-tempest-plugin-basic-train
@@ -21,6 +22,7 @@
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
+        - cinder-tempest-plugin-cbak-ceph-wallaby
         - cinder-tempest-plugin-cbak-ceph-victoria
         - cinder-tempest-plugin-cbak-ceph-ussuri
         - cinder-tempest-plugin-cbak-ceph-train
@@ -107,6 +109,12 @@
         c-bak: true
 
 - job:
+    name: cinder-tempest-plugin-cbak-ceph-wallaby
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-focal
+    override-checkout: stable/wallaby
+
+- job:
     name: cinder-tempest-plugin-cbak-ceph-victoria
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-focal
@@ -183,6 +191,12 @@
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+
+- job:
+    name: cinder-tempest-plugin-basic-wallaby
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-focal
+    override-checkout: stable/wallaby
 
 - job:
     name: cinder-tempest-plugin-basic-victoria
