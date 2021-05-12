@@ -16,7 +16,7 @@ from tempest import config
 from tempest.lib.common.utils import data_utils
 from tempest.lib import decorators
 
-from cinder_tempest_plugin.scenario import manager
+from tempest.scenario import manager
 
 CONF = config.CONF
 
@@ -130,7 +130,7 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
         """
 
         keypair = self.create_keypair()
-        security_group = self._create_security_group()
+        security_group = self.create_security_group()
 
         volume = self.create_encrypted_volume_from_image('luks')
 
