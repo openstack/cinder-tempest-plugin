@@ -125,6 +125,40 @@ class ScenarioTest(manager.ScenarioTest):
                                   server=instance)
         return count, md5_sum
 
+    def write_data_to_device(self, ip_address, out_dev, in_dev='/dev/urandom',
+                             bs=1024, count=100, private_key=None,
+                             server=None, sha_sum=False):
+        ssh_client = self.get_remote_client(
+            ip_address, private_key=private_key, server=server)
+
+        # Write data to device
+        write_command = (
+            'sudo dd bs=%(bs)s count=%(count)s if=%(in_dev)s of=%(out_dev)s '
+            '&& sudo dd bs=%(bs)s count=%(count)s if=%(out_dev)s' %
+            {'bs': str(bs), 'count': str(count), 'in_dev': in_dev,
+             'out_dev': out_dev})
+        if sha_sum:
+            # If we want to read sha1sum instead of the device data
+            write_command += ' | sha1sum | head -c 40'
+        data = ssh_client.exec_command(write_command)
+
+        return data
+
+    def read_data_from_device(self, ip_address, in_dev, bs=1024, count=100,
+                              private_key=None, server=None, sha_sum=False):
+        ssh_client = self.get_remote_client(
+            ip_address, private_key=private_key, server=server)
+
+        # Read data from device
+        read_command = ('sudo dd bs=%(bs)s count=%(count)s if=%(in_dev)s' %
+                        {'bs': bs, 'count': count, 'in_dev': in_dev})
+        if sha_sum:
+            # If we want to read sha1sum instead of the device data
+            read_command += ' | sha1sum  | head -c 40'
+        data = ssh_client.exec_command(read_command)
+
+        return data
+
     def _attach_and_get_volume_device_name(self, server, volume, instance_ip,
                                            private_key):
         ssh_client = self.get_remote_client(
