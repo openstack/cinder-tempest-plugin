@@ -15,6 +15,9 @@
         - cinder-tempest-plugin-basic-victoria
         - cinder-tempest-plugin-basic-ussuri
         - cinder-tempest-plugin-basic-train
+        # Set this job to voting once we have some actual tests to run
+        - cinder-tempest-plugin-protection-functional:
+            voting: false
     gate:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
@@ -26,6 +29,26 @@
         - cinder-tempest-plugin-cbak-ceph-victoria
         - cinder-tempest-plugin-cbak-ceph-ussuri
         - cinder-tempest-plugin-cbak-ceph-train
+
+- job:
+    name: cinder-tempest-plugin-protection-functional
+    parent: devstack-tempest
+    required-projects:
+      - opendev.org/openstack/cinder-tempest-plugin
+      - opendev.org/openstack/cinder
+    vars:
+      tox_envlist: all
+      tempest_test_regex: 'cinder_tempest_plugin.rbac'
+      devstack_local_conf:
+        test-config:
+          $CINDER_CONF:
+            oslo_policy:
+              enforce_new_defaults: True
+          $TEMPEST_CONFIG:
+            enforce_scope:
+              cinder: True
+      tempest_plugins:
+        - cinder-tempest-plugin
 
 - job:
     name: cinder-tempest-plugin-lvm-barbican-base-abstract
