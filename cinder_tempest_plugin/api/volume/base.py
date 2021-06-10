@@ -72,7 +72,7 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
     def create_volume(cls, wait_until='available', **kwargs):
         """Wrapper utility that returns a test volume.
 
-           :param wait_until: wait till volume status.
+           :param wait_until: wait till volume status, None means no wait.
         """
         if 'size' not in kwargs:
             kwargs['size'] = CONF.volume.volume_size
@@ -93,8 +93,9 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
         cls.addClassResourceCleanup(test_utils.call_and_ignore_notfound_exc,
                                     cls.volumes_client.delete_volume,
                                     volume['id'])
-        waiters.wait_for_volume_resource_status(cls.volumes_client,
-                                                volume['id'], wait_until)
+        if wait_until:
+            waiters.wait_for_volume_resource_status(cls.volumes_client,
+                                                    volume['id'], wait_until)
         return volume
 
     @classmethod
@@ -199,3 +200,19 @@ class BaseVolumeAdminTest(BaseVolumeTest):
             cls.admin_volume_types_client.delete_volume_type, type_id)
         test_utils.call_and_ignore_notfound_exc(
             cls.admin_volume_types_client.wait_for_resource_deletion, type_id)
+
+
+class CreateMultipleResourceTest(BaseVolumeTest):
+
+    def _create_multiple_resource(self, callback, repeat_count=5,
+                                  **kwargs):
+
+        res = []
+        for _ in range(repeat_count):
+            res.append(callback(**kwargs)['id'])
+        return res
+
+    def _wait_for_multiple_resources(self, callback, wait_list, **kwargs):
+
+        for r in wait_list:
+            callback(resource_id=r, **kwargs)
