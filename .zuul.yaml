@@ -116,6 +116,9 @@
       This is a base job for lvm with lio & tgt targets
     branches: ^(?=stable/(ocata|pike|queens|rocky|stein)).*$
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
+    required-projects:
+      - name: opendev.org/openstack/cinder-tempest-plugin
+        override-checkout: stein-last
     vars:
       tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-blacklist.txt'
 
