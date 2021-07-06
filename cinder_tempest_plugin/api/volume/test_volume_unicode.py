@@ -72,13 +72,13 @@ class CinderUnicodeTest(base.BaseVolumeTest):
     @decorators.idempotent_id('332be44d-5418-4fb3-a8f0-a3587de6929f')
     def test_snapshot_create_volume_description_non_ascii_code(self):
         # Create a volume with non-ascii description
-        description = u'\u05e7\u05d9\u05d9\u05e4\u05e9'
+        description = '\u05e7\u05d9\u05d9\u05e4\u05e9'
         volume = self.create_volume(description=description)
         vol_info = self.volumes_client.show_volume(volume['id'])['volume']
         self.assertEqual(description, vol_info['description'])
 
         # Create a snapshot with different non-ascii description
-        description = u'\u4e2d\u56fd\u793e\u533a'
+        description = '\u4e2d\u56fd\u793e\u533a'
         snapshot = self.create_snapshot(volume['id'], description=description)
         snapshot_info = self.snapshots_client.show_snapshot(
             snapshot['id'])['snapshot']
