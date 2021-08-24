@@ -14,9 +14,15 @@
 #    under the License.
 
 from tempest.common import utils
+from tempest.common import waiters
+from tempest import config
 from tempest.lib import decorators
 
+import testtools
+
 from cinder_tempest_plugin.scenario import manager
+
+CONF = config.CONF
 
 
 class SnapshotDataIntegrityTests(manager.ScenarioTest):
@@ -121,3 +127,33 @@ class SnapshotDataIntegrityTests(manager.ScenarioTest):
 
             self.assertEqual(count_snap, i)
             self.assertEqual(file_map[i], md5_file)
+
+
+class SnapshotDependencyTests(manager.ScenarioTest):
+    @testtools.skipUnless(CONF.volume_feature_enabled.volume_image_dep_tests,
+                          'dependency tests not enabled')
+    @decorators.idempotent_id('e7028f52-f6d4-479c-8809-6f6cf96cfe0f')
+    @utils.services('image', 'volume')
+    def test_snapshot_removal(self):
+        volume_1 = self.create_volume()
+
+        snapshot_1 = self.create_volume_snapshot(volume_1['id'], force=True)
+        waiters.wait_for_volume_resource_status(
+            self.snapshots_client, snapshot_1['id'], 'available')
+
+        clone_kwargs = {'snapshot_id': snapshot_1['id'],
+                        'size': volume_1['size']}
+        volume_2 = self.volumes_client.create_volume(**clone_kwargs)['volume']
+
+        waiters.wait_for_volume_resource_status(
+            self.volumes_client, volume_2['id'], 'available')
+        volume_2 = self.volumes_client.show_volume(volume_2['id'])['volume']
+
+        self.snapshots_client.delete_snapshot(snapshot_1['id'])
+        self.snapshots_client.wait_for_resource_deletion(snapshot_1['id'])
+
+        self.volumes_client.delete_volume(volume_1['id'])
+        self.volumes_client.wait_for_resource_deletion(volume_1['id'])
+
+        self.volumes_client.delete_volume(volume_2['id'])
+        self.volumes_client.wait_for_resource_deletion(volume_2['id'])
