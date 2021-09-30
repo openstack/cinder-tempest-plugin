@@ -80,4 +80,4 @@ class VolumeRevertTests(base.BaseVolumeTest):
         # Destination volume smaller than source, API should block that
         self.assertRaises(exceptions.BadRequest,
                           self.volume_revert_client.revert_to_snapshot,
-                          self.volume, self.snapshot)
+                          self.volume, self.snapshot['id'])
