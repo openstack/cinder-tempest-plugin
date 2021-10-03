@@ -13,7 +13,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tempest.common import waiters
 from tempest import config
 from tempest.lib import decorators
 from tempest.lib import exceptions
@@ -41,19 +40,10 @@ class VolumesBackupsTest(base.BaseVolumeAdminTest):
     def test_backup_crossproject_admin_negative(self):
 
         # create vol as user
-        volume = self.volumes_client.create_volume(
-            size=CONF.volume.volume_size)['volume']
-        waiters.wait_for_volume_resource_status(
-            self.volumes_client,
-            volume['id'], 'available')
+        volume = self.create_volume(size=CONF.volume.volume_size)
 
         # create backup as user
-        backup = self.backups_client.create_backup(
-            volume_id=volume['id'])['backup']
-        waiters.wait_for_volume_resource_status(
-            self.backups_client,
-            backup['id'], 'available')
-
+        self.create_backup(volume_id=volume['id'])
         # try to create incremental backup as admin
         self.assertRaises(
             exceptions.BadRequest, self.admin_backups_client.create_backup,
@@ -63,18 +53,12 @@ class VolumesBackupsTest(base.BaseVolumeAdminTest):
     def test_backup_crossproject_user_negative(self):
 
         # create vol as user
-        volume = self.volumes_client.create_volume(
-            size=CONF.volume.volume_size)['volume']
-        waiters.wait_for_volume_resource_status(
-            self.volumes_client,
-            volume['id'], 'available')
+        volume = self.create_volume(size=CONF.volume.volume_size)
 
         # create backup as admin
-        backup = self.admin_backups_client.create_backup(
-            volume_id=volume['id'])['backup']
-        waiters.wait_for_volume_resource_status(
-            self.admin_backups_client,
-            backup['id'], 'available')
+
+        self.create_backup(volume_id=volume['id'],
+                           backup_client=self.admin_backups_client)
 
         # try to create incremental backup as user
         self.assertRaises(
@@ -85,25 +69,14 @@ class VolumesBackupsTest(base.BaseVolumeAdminTest):
     def test_incremental_backup_respective_parents(self):
 
         # create vol as user
-        volume = self.volumes_client.create_volume(
-            size=CONF.volume.volume_size)['volume']
-        waiters.wait_for_volume_resource_status(
-            self.volumes_client,
-            volume['id'], 'available')
+        volume = self.create_volume(size=CONF.volume.volume_size)
 
         # create backup as admin
-        backup_adm = self.admin_backups_client.create_backup(
-            volume_id=volume['id'])['backup']
-        waiters.wait_for_volume_resource_status(
-            self.admin_backups_client,
-            backup_adm['id'], 'available')
+        backup_adm = self.create_backup(
+            volume_id=volume['id'], backup_client=self.admin_backups_client)
 
         # create backup as user
-        backup_usr = self.backups_client.create_backup(
-            volume_id=volume['id'])['backup']
-        waiters.wait_for_volume_resource_status(
-            self.backups_client,
-            backup_usr['id'], 'available')
+        backup_usr = self.create_backup(volume_id=volume['id'])
 
         # refresh admin backup and assert no child backups
         backup_adm = self.admin_backups_client.show_backup(
@@ -111,11 +84,8 @@ class VolumesBackupsTest(base.BaseVolumeAdminTest):
         self.assertFalse(backup_adm['has_dependent_backups'])
 
         # create incremental backup as admin
-        backup_adm_inc = self.admin_backups_client.create_backup(
-            volume_id=volume['id'], incremental=True)['backup']
-        waiters.wait_for_volume_resource_status(
-            self.admin_backups_client,
-            backup_adm_inc['id'], 'available')
+        self.create_backup(volume_id=volume['id'], incremental=True,
+                           backup_client=self.admin_backups_client)
 
         # refresh user backup and assert no child backups
         backup_usr = self.backups_client.show_backup(
@@ -128,11 +98,8 @@ class VolumesBackupsTest(base.BaseVolumeAdminTest):
         self.assertTrue(backup_adm['has_dependent_backups'])
 
         # create incremental backup as user
-        backup_usr_inc = self.backups_client.create_backup(
-            volume_id=volume['id'], incremental=True)['backup']
-        waiters.wait_for_volume_resource_status(
-            self.backups_client,
-            backup_usr_inc['id'], 'available')
+        self.create_backup(volume_id=volume['id'],
+                           incremental=True)
 
         # refresh user backup and assert it has childs
         backup_usr = self.backups_client.show_backup(
