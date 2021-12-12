@@ -36,7 +36,7 @@ class SnapshotDataIntegrityTests(manager.ScenarioTest):
         1) Create an instance with ephemeral disk
         2) Create a volume, attach it to the instance and create a filesystem
            on it and mount it
-        3) Mount the volume, create a file and write data into it, Unmount it
+        3) Create a file and write data into it, Unmount it
         4) create snapshot
         5) repeat 3 and 4 two more times (simply creating 3 snapshots)
 
@@ -93,41 +93,21 @@ class SnapshotDataIntegrityTests(manager.ScenarioTest):
         # Detach the volume
         self.nova_volume_detach(server, volume)
 
-        # Create volume from snapshot, attach it to instance and check file
-        # and contents for snap1
-        volume_snap_1 = self.create_volume(snapshot_id=snapshot1['id'])
-        volume_device_name, __ = self._attach_and_get_volume_device_name(
-            server, volume_snap_1, instance_ip, self.keypair['private_key'])
-        count_snap_1, md5_file_1 = self.get_md5_from_file(
-            server, instance_ip, 'file1', dev_name=volume_device_name)
-        # Detach the volume
-        self.nova_volume_detach(server, volume_snap_1)
+        snap_map = {1: snapshot1, 2: snapshot2, 3: snapshot3}
+        file_map = {1: file1_md5, 2: file2_md5, 3: file3_md5}
 
-        self.assertEqual(count_snap_1, 1)
-        self.assertEqual(file1_md5, md5_file_1)
+        # Loop over 3 times to check the data integrity of all 3 snapshots
+        for i in range(1, 4):
+            # Create volume from snapshot, attach it to instance and check file
+            # and contents for snap
+            volume_snap = self.create_volume(snapshot_id=snap_map[i]['id'])
+            volume_device_name, __ = self._attach_and_get_volume_device_name(
+                server, volume_snap, instance_ip, self.keypair['private_key'])
+            count_snap, md5_file = self.get_md5_from_file(
+                server, instance_ip, 'file' + str(i),
+                dev_name=volume_device_name)
+            # Detach the volume
+            self.nova_volume_detach(server, volume_snap)
 
-        # Create volume from snapshot, attach it to instance and check file
-        # and contents for snap2
-        volume_snap_2 = self.create_volume(snapshot_id=snapshot2['id'])
-        volume_device_name, __ = self._attach_and_get_volume_device_name(
-            server, volume_snap_2, instance_ip, self.keypair['private_key'])
-        count_snap_2, md5_file_2 = self.get_md5_from_file(
-            server, instance_ip, 'file2', dev_name=volume_device_name)
-        # Detach the volume
-        self.nova_volume_detach(server, volume_snap_2)
-
-        self.assertEqual(count_snap_2, 2)
-        self.assertEqual(file2_md5, md5_file_2)
-
-        # Create volume from snapshot, attach it to instance and check file
-        # and contents for snap3
-        volume_snap_3 = self.create_volume(snapshot_id=snapshot3['id'])
-        volume_device_name, __ = self._attach_and_get_volume_device_name(
-            server, volume_snap_3, instance_ip, self.keypair['private_key'])
-        count_snap_3, md5_file_3 = self.get_md5_from_file(
-            server, instance_ip, 'file3', dev_name=volume_device_name)
-        # Detach the volume
-        self.nova_volume_detach(server, volume_snap_3)
-
-        self.assertEqual(count_snap_3, 3)
-        self.assertEqual(file3_md5, md5_file_3)
+            self.assertEqual(count_snap, i)
+            self.assertEqual(file_map[i], md5_file)
