@@ -12,10 +12,10 @@
             voting: false
         - cinder-tempest-plugin-cbak-ceph
         - cinder-tempest-plugin-cbak-s3
+        - cinder-tempest-plugin-basic-xena
         - cinder-tempest-plugin-basic-wallaby
         - cinder-tempest-plugin-basic-victoria
         - cinder-tempest-plugin-basic-ussuri
-        - cinder-tempest-plugin-basic-train
         # Set this job to voting once we have some actual tests to run
         - cinder-tempest-plugin-protection-functional:
             voting: false
@@ -26,10 +26,10 @@
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
+        - cinder-tempest-plugin-cbak-ceph-xena
         - cinder-tempest-plugin-cbak-ceph-wallaby
         - cinder-tempest-plugin-cbak-ceph-victoria
         - cinder-tempest-plugin-cbak-ceph-ussuri
-        - cinder-tempest-plugin-cbak-ceph-train
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -138,6 +138,12 @@
         c-bak: true
 
 - job:
+    name: cinder-tempest-plugin-cbak-ceph-xena
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-focal
+    override-checkout: stable/xena
+
+- job:
     name: cinder-tempest-plugin-cbak-ceph-wallaby
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-focal
@@ -154,12 +160,6 @@
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-bionic
     override-checkout: stable/ussuri
-
-- job:
-    name: cinder-tempest-plugin-cbak-ceph-train
-    parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-bionic
-    override-checkout: stable/train
 
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
@@ -237,6 +237,12 @@
       - ^releasenotes/.*$
 
 - job:
+    name: cinder-tempest-plugin-basic-xena
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-focal
+    override-checkout: stable/xena
+
+- job:
     name: cinder-tempest-plugin-basic-wallaby
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-focal
@@ -253,12 +259,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-bionic
     override-checkout: stable/ussuri
-
-- job:
-    name: cinder-tempest-plugin-basic-train
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-bionic
-    override-checkout: stable/train
-    vars:
-      devstack_localrc:
-        USE_PYTHON3: True
