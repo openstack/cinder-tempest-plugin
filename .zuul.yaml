@@ -96,12 +96,33 @@
     description: |
       This is a base job for lvm with lio & tgt targets
       with cinderlib tests.
-    branches: ^(?!stable/(ocata|pike|queens|rocky|stein)).*$
+    branches: ^(?!stable/(ocata|pike|queens|rocky|stein|train)).*$
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
     roles:
       - zuul: opendev.org/openstack/cinderlib
     required-projects:
       - opendev.org/openstack/cinderlib
+    run: playbooks/tempest-and-cinderlib-run.yaml
+    # Required to collect the tox-based logs of the cinderlib functional tests
+    post-run: playbooks/post-cinderlib.yaml
+    vars:
+      fetch_subunit_output_additional_dirs:
+        - "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
+      tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
+
+- job:
+    name: cinder-tempest-plugin-lvm-barbican-base
+    description: |
+      This is a base job for lvm with lio & tgt targets
+      with cinderlib tests to run on stable/train testing.
+    branches: stable/train
+    parent: cinder-tempest-plugin-lvm-barbican-base-abstract
+    roles:
+      - zuul: opendev.org/openstack/cinderlib
+    required-projects:
+      - opendev.org/openstack/cinderlib
+      - name: opendev.org/openstack/cinder-tempest-plugin
+        override-checkout: 1.3.0
     run: playbooks/tempest-and-cinderlib-run.yaml
     # Required to collect the tox-based logs of the cinderlib functional tests
     post-run: playbooks/post-cinderlib.yaml
