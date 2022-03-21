@@ -14,10 +14,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import http.client as http_client
 import time
 
 from oslo_serialization import jsonutils as json
-from six.moves import http_client
 from tempest.lib.common import rest_client
 from tempest.lib import exceptions as lib_exc
 
