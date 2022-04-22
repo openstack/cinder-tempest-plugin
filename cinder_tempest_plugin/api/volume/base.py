@@ -13,10 +13,10 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-from tempest.api.volume import api_microversion_fixture
 from tempest.common import compute
 from tempest.common import waiters
 from tempest import config
+from tempest.lib.common import api_microversion_fixture
 from tempest.lib.common import api_version_utils
 from tempest.lib.common.utils import data_utils
 from tempest.lib.common.utils import test_utils
@@ -58,7 +58,7 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
     def setUp(self):
         super(BaseVolumeTest, self).setUp()
         self.useFixture(api_microversion_fixture.APIMicroversionFixture(
-            self.request_microversion))
+            volume_microversion=self.request_microversion))
 
     @classmethod
     def resource_setup(cls):
