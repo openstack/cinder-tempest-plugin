@@ -12,6 +12,7 @@
 
 import abc
 
+from tempest.lib import decorators
 from tempest.lib import exceptions
 
 from cinder_tempest_plugin.api.volume import base
@@ -56,6 +57,7 @@ class ProjectAdminTests(VolumeV3RbacCapabilityTests, base.BaseVolumeTest):
 
     credentials = ['project_admin', 'system_admin']
 
+    @decorators.idempotent_id('1fdbe493-e58f-48bf-bb38-52003eeef8cb')
     def test_get_capabilities(self):
         pools = self.admin_stats_client.list_pools()['pools']
         host_name = pools[0]['name']
@@ -67,6 +69,7 @@ class ProjectMemberTests(ProjectAdminTests, base.BaseVolumeTest):
 
     credentials = ['project_member', 'project_admin', 'system_admin']
 
+    @decorators.idempotent_id('dbaf51de-fafa-4f55-875f-7537524489ab')
     def test_get_capabilities(self):
         pools = self.admin_stats_client.list_pools()['pools']
         host_name = pools[0]['name']
