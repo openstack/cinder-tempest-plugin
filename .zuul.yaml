@@ -5,7 +5,7 @@
     check:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
-        - cinder-tempest-plugin-lvm-lio-barbican-centos-8-stream:
+        - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream:
             voting: false
         - cinder-tempest-plugin-lvm-tgt-barbican
         - nova-ceph-multistore:
@@ -210,7 +210,15 @@
     nodeset: devstack-single-node-centos-8-stream
     description: |
       This jobs configures Cinder with LVM, LIO, barbican and
-      runs tempest tests and cinderlib tests on CentOS 8.
+      runs tempest tests and cinderlib tests on CentOS Stream 8.
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
+    parent: cinder-tempest-plugin-lvm-lio-barbican
+    nodeset: devstack-single-node-centos-9-stream
+    description: |
+      This jobs configures Cinder with LVM, LIO, barbican and
+      runs tempest tests and cinderlib tests on CentOS Stream 9.
 
 - job:
     name: cinder-tempest-plugin-lvm-tgt-barbican
