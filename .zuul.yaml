@@ -128,6 +128,8 @@
               volume_revert: True
       devstack_services:
         barbican: true
+        # explicitly enable c-bak, as it may be disabled in the parent job
+        c-bak: true
       tempest_plugins:
         - cinder-tempest-plugin
     irrelevant-files:
