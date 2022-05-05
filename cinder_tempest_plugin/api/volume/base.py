@@ -165,7 +165,7 @@ class BaseVolumeAdminTest(BaseVolumeTest):
 
         cls.admin_volume_types_client = cls.os_admin.volume_types_client_latest
         cls.admin_backups_client = cls.os_admin.backups_client_latest
-        cls.admin_volumes_client = cls.os_admin.volumes_client_latest
+        cls.admin_volume_client = cls.os_admin.volumes_client_latest
 
     @classmethod
     def create_volume_type(cls, name=None, **kwargs):
@@ -188,12 +188,12 @@ class BaseVolumeAdminTest(BaseVolumeTest):
         type_id = volume_type['id']
         type_name = volume_type['name']
 
-        volumes = cls.admin_volumes_client.list_volumes(
+        volumes = cls.admin_volume_client.list_volumes(
             detail=True, params={'all_tenants': 1})['volumes']
         for volume in [v for v in volumes if v['volume_type'] == type_name]:
             test_utils.call_and_ignore_notfound_exc(
-                cls.admin_volumes_client.delete_volume, volume['id'])
-            cls.admin_volumes_client.wait_for_resource_deletion(volume['id'])
+                cls.admin_volume_client.delete_volume, volume['id'])
+            cls.admin_volume_client.wait_for_resource_deletion(volume['id'])
 
         test_utils.call_and_ignore_notfound_exc(
             cls.admin_volume_types_client.delete_volume_type, type_id)

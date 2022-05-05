@@ -24,13 +24,6 @@ CONF = config.CONF
 
 class VolumesBackupsTest(base.BaseVolumeAdminTest):
     @classmethod
-    def setup_clients(cls):
-        super(VolumesBackupsTest, cls).setup_clients()
-        cls.admin_volume_client = cls.os_admin.volumes_client_latest
-        cls.backups_client = cls.os_primary.backups_client_latest
-        cls.volumes_client = cls.os_primary.volumes_client_latest
-
-    @classmethod
     def skip_checks(cls):
         super(VolumesBackupsTest, cls).skip_checks()
         if not CONF.volume_feature_enabled.backup:

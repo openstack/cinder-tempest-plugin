@@ -28,9 +28,7 @@ CONF = config.CONF
 class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
     @classmethod
     def setup_clients(cls):
-        cls._api_version = 2
         super(ConsistencyGroupsV2Test, cls).setup_clients()
-        cls.admin_volume_client = cls.os_admin.volumes_v2_client
 
         manager = cinder_clients.Manager(cls.os_admin)
         cls.consistencygroups_adm_client = manager.consistencygroups_adm_client
