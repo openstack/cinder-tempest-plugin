@@ -13,6 +13,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import contextlib
+
 from oslo_log import log
 
 from tempest.common import waiters
@@ -55,20 +57,25 @@ class ScenarioTest(manager.ScenarioTest):
                        if item not in disks_list_before_attach][0]
         return volume_name
 
+    @contextlib.contextmanager
+    def mount_dev_path(self, ssh_client, dev_name, mount_path):
+        if dev_name is not None:
+            ssh_client.exec_command('sudo mount /dev/%s %s' % (dev_name,
+                                                               mount_path))
+            yield
+            ssh_client.exec_command('sudo umount %s' % mount_path)
+        else:
+            yield
+
     def _get_file_md5(self, ip_address, filename, dev_name=None,
                       mount_path='/mnt', private_key=None, server=None):
 
         ssh_client = self.get_remote_client(ip_address,
                                             private_key=private_key,
                                             server=server)
-        if dev_name is not None:
-            ssh_client.exec_command('sudo mount /dev/%s %s' % (dev_name,
-                                                               mount_path))
-
-        md5_sum = ssh_client.exec_command(
-            'sudo md5sum %s/%s|cut -c 1-32' % (mount_path, filename))
-        if dev_name is not None:
-            ssh_client.exec_command('sudo umount %s' % mount_path)
+        with self.mount_dev_path(ssh_client, dev_name, mount_path):
+            md5_sum = ssh_client.exec_command(
+                'sudo md5sum %s/%s|cut -c 1-32' % (mount_path, filename))
         return md5_sum
 
     def _count_files(self, ip_address, dev_name=None, mount_path='/mnt',
@@ -76,12 +83,9 @@ class ScenarioTest(manager.ScenarioTest):
         ssh_client = self.get_remote_client(ip_address,
                                             private_key=private_key,
                                             server=server)
-        if dev_name is not None:
-            ssh_client.exec_command('sudo mount /dev/%s %s' % (dev_name,
-                                                               mount_path))
-        count = ssh_client.exec_command('sudo ls -l %s | wc -l' % mount_path)
-        if dev_name is not None:
-            ssh_client.exec_command('sudo umount %s' % mount_path)
+        with self.mount_dev_path(ssh_client, dev_name, mount_path):
+            count = ssh_client.exec_command(
+                'sudo ls -l %s | wc -l' % mount_path)
         # We subtract 2 from the count since `wc -l` also includes the count
         # of new line character and while creating the filesystem, a
         # lost+found folder is also created
@@ -100,17 +104,13 @@ class ScenarioTest(manager.ScenarioTest):
                                             private_key=private_key,
                                             server=server)
 
-        if dev_name is not None:
-            ssh_client.exec_command('sudo mount /dev/%s %s' % (dev_name,
-                                                               mount_path))
-        ssh_client.exec_command(
-            'sudo dd bs=1024 count=100 if=/dev/urandom of=/%s/%s' %
-            (mount_path, filename))
-        md5 = ssh_client.exec_command(
-            'sudo md5sum -b %s/%s|cut -c 1-32' % (mount_path, filename))
-        ssh_client.exec_command('sudo sync')
-        if dev_name is not None:
-            ssh_client.exec_command('sudo umount %s' % mount_path)
+        with self.mount_dev_path(ssh_client, dev_name, mount_path):
+            ssh_client.exec_command(
+                'sudo dd bs=1024 count=100 if=/dev/urandom of=/%s/%s' %
+                (mount_path, filename))
+            md5 = ssh_client.exec_command(
+                'sudo md5sum -b %s/%s|cut -c 1-32' % (mount_path, filename))
+            ssh_client.exec_command('sudo sync')
         return md5
 
     def get_md5_from_file(self, instance, instance_ip, filename,
