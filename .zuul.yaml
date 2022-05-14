@@ -150,6 +150,7 @@
       Integration tests that runs with the ceph devstack plugin, py3
       and enable the backup service.
     vars:
+      configure_swap_size: 4096
       devstack_local_conf:
         test-config:
           $TEMPEST_CONFIG:
