@@ -80,6 +80,8 @@
               # FIXME: 'creator' should be re-added by the barbican devstack plugin
               # but the value below override everything.
               tempest_roles: member,creator
+            volume:
+              build_timeout: 300
             volume-feature-enabled:
               volume_revert: True
       devstack_services:
