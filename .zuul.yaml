@@ -98,7 +98,7 @@
     description: |
       This is a base job for lvm with lio & tgt targets
       with cinderlib tests.
-    branches: ^(?!stable/(ocata|pike|queens|rocky|stein|train)).*$
+    branches: ^(?!stable/(ocata|pike|queens|rocky|stein|train|ussuri|victoria)).*$
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
     roles:
       - zuul: opendev.org/openstack/cinderlib
@@ -117,7 +117,10 @@
     description: |
       This is a base job for lvm with lio & tgt targets
       with cinderlib tests to run on stable/train testing.
-    branches: stable/train
+    branches:
+      - stable/train
+      - stable/ussuri
+      - stable/victoria
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
     roles:
       - zuul: opendev.org/openstack/cinderlib
