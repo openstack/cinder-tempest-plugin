@@ -67,6 +67,8 @@
     vars:
       tempest_test_regex: '(^tempest\.(api|scenario)|(^cinder_tempest_plugin))'
       tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
+      # Temporarily exclude TestMultiAttachVolumeSwap until LP bug #1980816 is resolved.
+      tempest_exclude_regex: 'TestMultiAttachVolumeSwap'
       tox_envlist: all
       devstack_localrc:
         ENABLE_VOLUME_MULTIATTACH: true
