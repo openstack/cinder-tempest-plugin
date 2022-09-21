@@ -67,7 +67,7 @@ class VolumesBackupsTest(base.BaseVolumeTest):
         self.assertEqual(src_vol['id'], restore['volume_id'])
         self.assertEqual(backup['id'], restore['backup_id'])
 
-    @decorators.idempotent_id('b5d837b0-7066-455d-88fc-4a721a899306')
+    @decorators.idempotent_id('457359e2-a663-4758-8f76-06d392dfd7c7')
     def test_incr_backup_create_and_restore_to_an_existing_volume(self):
         """Test incr backup create and restore to an existing volume."""
         # Create volume
