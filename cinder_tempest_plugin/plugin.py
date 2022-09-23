@@ -46,6 +46,9 @@ class CinderTempestPlugin(plugins.TempestPlugin):
         config.register_opt_group(conf, config.volume_feature_group,
                                   project_config.cinder_option)
 
+        config.register_opt_group(conf, config.service_available_group,
+                                  project_config.service_available_option)
+
     def get_opt_lists(self):
         """Get a list of options for sample config generation.
 
@@ -54,4 +57,6 @@ class CinderTempestPlugin(plugins.TempestPlugin):
         """
         return [
             (config.volume_feature_group.name, project_config.cinder_option),
+            (config.service_available_group.name,
+             project_config.service_available_option),
         ]
