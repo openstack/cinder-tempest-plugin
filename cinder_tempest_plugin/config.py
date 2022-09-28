@@ -26,11 +26,11 @@ cinder_option = [
 
 # The barbican service is discovered by config_tempest [1], and will appear
 # in the [service_available] group in tempest.conf. However, the 'barbican'
-# option isn't registered by tempest itself, and so we do it here. This adds
-# the ability to test CONF.service_available.barbican.
+# option isn't registered by tempest itself, and so we may need to do it.
+# This adds the ability to test CONF.service_available.barbican.
 #
 # [1] I96800a95f844ce7675d266e456e01620e63e347a
-service_available_option = [
+barbican_service_option = [
     cfg.BoolOpt('barbican',
                 default=False,
                 help="Whether or not barbican is expected to be available"),

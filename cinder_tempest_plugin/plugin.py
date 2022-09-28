@@ -14,6 +14,7 @@
 #    under the License.
 
 import os
+import sys
 
 from tempest import config
 from tempest.test_discover import plugins
@@ -46,8 +47,12 @@ class CinderTempestPlugin(plugins.TempestPlugin):
         config.register_opt_group(conf, config.volume_feature_group,
                                   project_config.cinder_option)
 
-        config.register_opt_group(conf, config.service_available_group,
-                                  project_config.service_available_option)
+        # Define the 'barbican' service_available option, but only if the
+        # barbican_tempest_plugin isn't present. It also defines the option,
+        # and we need to avoid a duplicate option registration.
+        if 'barbican_tempest_plugin' not in sys.modules:
+            config.register_opt_group(conf, config.service_available_group,
+                                      project_config.barbican_service_option)
 
     def get_opt_lists(self):
         """Get a list of options for sample config generation.
@@ -55,8 +60,12 @@ class CinderTempestPlugin(plugins.TempestPlugin):
         :return: A list of tuples with the group name and options in that
                  group.
         """
-        return [
+        opt_lists = [
             (config.volume_feature_group.name, project_config.cinder_option),
-            (config.service_available_group.name,
-             project_config.service_available_option),
         ]
+
+        if 'barbican_tempest_plugin' not in sys.modules:
+            opt_lists.append((config.service_available_group.name,
+                              project_config.barbican_service_option))
+
+        return opt_lists
