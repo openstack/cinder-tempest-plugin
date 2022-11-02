@@ -144,13 +144,11 @@
     name: cinder-tempest-plugin-lvm-barbican-base
     description: |
       This is a base job for lvm with lio & tgt targets
-      with cinderlib tests to run on stable/train to stable/victoria
+      with cinderlib tests to run on stable/victoria
       testing. To run on those stable branches that are using tempest
       26.1.0 (which is set in the devstack stackrc file), we must
       use cinder-tempest-plugin compatible version 1.3.0.
     branches:
-      - stable/train
-      - stable/ussuri
       - stable/victoria
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
     roles:
@@ -165,6 +163,26 @@
     vars:
       fetch_subunit_output_additional_dirs:
         - "{{ ansible_user_dir }}/{{ zuul.projects['opendev.org/openstack/cinderlib'].src_dir }}"
+      tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
+
+- job:
+    name: cinder-tempest-plugin-lvm-barbican-base
+    description: |
+      This is a base job for lvm with lio & tgt targets
+      for stable/train and stable/ussuri testing.
+      To run on those stable branches that are using tempest
+      26.1.0 (which is set in the devstack stackrc file), we must
+      use cinder-tempest-plugin compatible version 1.3.0.
+      We no longer test cinderlib because it's EOL on these branches.
+    branches:
+      - stable/train
+      - stable/ussuri
+    parent: cinder-tempest-plugin-lvm-barbican-base-abstract
+    required-projects:
+      - opendev.org/openstack/cinderlib
+      - name: opendev.org/openstack/cinder-tempest-plugin
+        override-checkout: 1.3.0
+    vars:
       tempest_test_exclude_list: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
 
 - job:
