@@ -8,7 +8,11 @@
         - cinder-tempest-plugin-lvm-lio-barbican
         - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream:
             voting: false
-        - cinder-tempest-plugin-lvm-tgt-barbican
+        # FIXME: the tgt job is broken on jammy, and we may be removing tgt
+        # support anyway.  So make it non-voting until we figure out what to
+        # do about this, which should be at the March 2023 virtual PTG.
+        - cinder-tempest-plugin-lvm-tgt-barbican:
+            voting: false
         - nova-ceph-multistore:
             voting: false
         - cinder-tempest-plugin-cbak-ceph
@@ -27,7 +31,8 @@
     gate:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
-        - cinder-tempest-plugin-lvm-tgt-barbican
+        # FIXME: no sense running a non-voting gate job.  See comment above.
+        # - cinder-tempest-plugin-lvm-tgt-barbican
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
