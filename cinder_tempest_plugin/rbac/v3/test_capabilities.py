@@ -81,3 +81,7 @@ class ProjectMemberTests(ProjectAdminTests, base.BaseVolumeTest):
 class ProjectReaderTests(ProjectMemberTests, base.BaseVolumeTest):
 
     credentials = ['project_reader', 'project_admin', 'system_admin']
+
+    @decorators.idempotent_id('d16034fc-4204-4ea8-94b3-714de59fdfbf')
+    def test_get_capabilities(self):
+        super().test_get_capabilities()
