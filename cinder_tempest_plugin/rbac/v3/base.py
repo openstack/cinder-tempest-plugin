@@ -10,9 +10,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from tempest.common import waiters
 from tempest import config
 from tempest.lib.common import api_microversion_fixture
 from tempest.lib.common import api_version_utils
+from tempest.lib.common.utils import data_utils
+from tempest.lib.common.utils import test_utils
+from tempest.lib.decorators import cleanup_order
 from tempest import test
 
 CONF = config.CONF
@@ -60,6 +64,17 @@ class VolumeV3RbacBaseTests(
                 CONF.volume.min_microversion))
 
     def do_request(self, method, expected_status=200, client=None, **payload):
+        """Perform API call
+
+        Args:
+            method: Name of the API call
+            expected_status: HTTP desired response code
+            client: Client object if exists, None otherwise
+            payload: API call required parameters
+
+        Returns:
+            HTTP response
+        """
         if not client:
             client = self.client
         if isinstance(expected_status, type(Exception)):
@@ -70,3 +85,78 @@ class VolumeV3RbacBaseTests(
             response = getattr(client, method)(**payload)
             self.assertEqual(response.response.status, expected_status)
             return response
+
+    @cleanup_order
+    def create_volume(self, client, **kwargs):
+        """Wrapper utility that returns a test volume
+
+        Args:
+            client: Client object
+
+        Returns:
+            ID of the created volume
+        """
+        kwargs['size'] = CONF.volume.volume_size
+        kwargs['name'] = data_utils.rand_name(
+            VolumeV3RbacBaseTests.__name__ + '-Volume'
+        )
+
+        volume_id = client.create_volume(**kwargs)['volume']['id']
+        self.cleanup(
+            test_utils.call_and_ignore_notfound_exc, func=self.delete_resource,
+            client=client, volume_id=volume_id
+        )
+        waiters.wait_for_volume_resource_status(
+            client=client, resource_id=volume_id, status='available'
+        )
+
+        return volume_id
+
+    @cleanup_order
+    def create_snapshot(self, client, volume_id, cleanup=True, **kwargs):
+        """Wrapper utility that returns a test snapshot.
+
+        Args:
+            client: Client object
+            volume_id: ID of the volume
+            cleanup: Boolean if should delete the snapshot
+
+        Returns:
+            ID of the created snapshot
+        """
+        kwargs['name'] = data_utils.rand_name(
+            VolumeV3RbacBaseTests.__name__ + '-Snapshot'
+        )
+
+        snapshot_id = client.create_snapshot(
+            volume_id=volume_id, **kwargs)['snapshot']['id']
+        if cleanup:
+            self.cleanup(
+                test_utils.call_and_ignore_notfound_exc,
+                func=self.delete_resource,
+                client=client, snapshot_id=snapshot_id
+            )
+        waiters.wait_for_volume_resource_status(
+            client=client, resource_id=snapshot_id, status='available'
+        )
+
+        return snapshot_id
+
+    @classmethod
+    def delete_resource(cls, client, **kwargs):
+        """Delete a resource by a given client
+
+        Args:
+            client: Client object
+
+        Keyword Args:
+            snapshot_id: ID of a snapshot
+            volume_id: ID of a volume
+        """
+        key, resource_id = list(kwargs.items())[0]
+        resource_name = key.split('_')[0]
+
+        del_action = getattr(client, f'delete_{resource_name}')
+        test_utils.call_and_ignore_notfound_exc(del_action, resource_id)
+        test_utils.call_and_ignore_notfound_exc(
+            client.wait_for_resource_deletion, resource_id)
