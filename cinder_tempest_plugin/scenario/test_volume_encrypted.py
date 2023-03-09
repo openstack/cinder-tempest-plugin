@@ -122,9 +122,8 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
         * Create an encrypted volume from image
         * Boot an instance from the volume
         * Write data to the volume
-        * Detach volume
-        * Create a clone from the first volume
-        * Create another encrypted volume from source_volumeid
+        * Destroy the instance
+        * Create a clone of the encrypted volume
         * Boot an instance from cloned volume
         * Verify the data
         """
