@@ -25,9 +25,7 @@
         - cinder-tempest-plugin-basic-zed
         - cinder-tempest-plugin-basic-yoga
         - cinder-tempest-plugin-basic-xena
-        # Set this job to voting once we have some actual tests to run
-        - cinder-tempest-plugin-protection-functional:
-            voting: false
+        - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
