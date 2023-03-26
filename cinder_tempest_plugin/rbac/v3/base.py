@@ -1,3 +1,4 @@
+
 #    Licensed under the Apache License, Version 2.0 (the "License"); you may
 #    not use this file except in compliance with the License. You may obtain
 #    a copy of the License at
@@ -25,7 +26,6 @@ CONF = config.CONF
 class VolumeV3RbacBaseTests(
     api_version_utils.BaseMicroversionTest, test.BaseTestCase
 ):
-
     identity_version = 'v3'
 
     @classmethod
@@ -40,7 +40,6 @@ class VolumeV3RbacBaseTests(
         if not CONF.service_available.cinder:
             skip_msg = ("%s skipped as Cinder is not available" % cls.__name__)
             raise cls.skipException(skip_msg)
-
         api_version_utils.check_skip_with_microversion(
             cls.min_microversion, cls.max_microversion,
             CONF.volume.min_microversion, CONF.volume.max_microversion)
@@ -160,3 +159,29 @@ class VolumeV3RbacBaseTests(
         test_utils.call_and_ignore_notfound_exc(del_action, resource_id)
         test_utils.call_and_ignore_notfound_exc(
             client.wait_for_resource_deletion, resource_id)
+
+    @classmethod
+    def create_backup(
+            cls, volume_id, backup_client=None, add_cleanup=True, **kwargs
+    ):
+        """Wrapper utility that returns a test backup."""
+        if backup_client is None:
+            backup_client = cls.backups_client
+        if 'name' not in kwargs:
+            name = data_utils.rand_name(cls.__class__.__name__ + '-Backup')
+            kwargs['name'] = name
+
+        backup = backup_client.create_backup(
+            volume_id=volume_id, **kwargs
+        )['backup']
+        if add_cleanup:
+            cls.addClassResourceCleanup(
+                test_utils.call_and_ignore_notfound_exc,
+                cls.delete_resource,
+                client=backup_client,
+                backup_id=backup['id']
+            )
+        waiters.wait_for_volume_resource_status(
+            backup_client, backup['id'], 'available'
+        )
+        return backup
