@@ -13,6 +13,8 @@
         # do about this, which should be at the March 2023 virtual PTG.
         - cinder-tempest-plugin-lvm-tgt-barbican:
             voting: false
+        - cinder-tempest-plugin-lvm-lio-barbican-fips:
+            voting: false
         - nova-ceph-multistore:
             voting: false
         - cinder-tempest-plugin-cbak-ceph
@@ -277,6 +279,19 @@
     description: |
       This jobs configures Cinder with LVM, LIO, barbican and
       runs tempest tests and cinderlib tests on CentOS Stream 9.
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-fips
+    parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
+    description: |
+      This job configures Cinder with LVM, LIO, barbican and
+      runs tempest tests and cinderlib tests on CentOS Stream 9
+      under FIPS mode
+    pre-run: playbooks/enable-fips.yaml
+    vars:
+      configure_swap_size: 4096
+      nslookup_target: 'opendev.org'
+      tempest_exclude_regex: 'test_encrypted_cinder_volumes_cryptsetup'
 
 - job:
     name: cinder-tempest-plugin-lvm-tgt-barbican
