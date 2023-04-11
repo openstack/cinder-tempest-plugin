@@ -22,6 +22,9 @@ cinder_option = [
     cfg.BoolOpt('volume_revert',
                 default=False,
                 help='Enable to run Cinder volume revert tests'),
+    cfg.BoolOpt('volume_image_dep_tests',
+                default=True,
+                help='Run tests for dependencies between images and volumes')
 ]
 
 # The barbican service is discovered by config_tempest [1], and will appear
