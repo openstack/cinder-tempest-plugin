@@ -11,11 +11,16 @@
 #    under the License.
 
 from tempest import config
+from tempest.lib.common import api_microversion_fixture
+from tempest.lib.common import api_version_utils
+from tempest import test
 
 CONF = config.CONF
 
 
-class VolumeV3RbacBaseTests(object):
+class VolumeV3RbacBaseTests(
+    api_version_utils.BaseMicroversionTest, test.BaseTestCase
+):
 
     identity_version = 'v3'
 
@@ -28,6 +33,31 @@ class VolumeV3RbacBaseTests(object):
                 "skipping RBAC tests. To enable these tests set "
                 "`tempest.conf [enforce_scope] cinder=True`."
             )
+        if not CONF.service_available.cinder:
+            skip_msg = ("%s skipped as Cinder is not available" % cls.__name__)
+            raise cls.skipException(skip_msg)
+
+        api_version_utils.check_skip_with_microversion(
+            cls.min_microversion, cls.max_microversion,
+            CONF.volume.min_microversion, CONF.volume.max_microversion)
+
+    @classmethod
+    def setup_credentials(cls):
+        cls.set_network_resources()
+        super(VolumeV3RbacBaseTests, cls).setup_credentials()
+
+    def setUp(self):
+        super(VolumeV3RbacBaseTests, self).setUp()
+        self.useFixture(api_microversion_fixture.APIMicroversionFixture(
+            volume_microversion=self.request_microversion))
+
+    @classmethod
+    def resource_setup(cls):
+        super(VolumeV3RbacBaseTests, cls).resource_setup()
+        cls.request_microversion = (
+            api_version_utils.select_request_microversion(
+                cls.min_microversion,
+                CONF.volume.min_microversion))
 
     def do_request(self, method, expected_status=200, client=None, **payload):
         if not client:
