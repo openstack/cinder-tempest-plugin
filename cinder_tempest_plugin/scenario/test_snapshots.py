@@ -23,7 +23,14 @@ class SnapshotDataIntegrityTests(manager.ScenarioTest):
 
     def setUp(self):
         super(SnapshotDataIntegrityTests, self).setUp()
-        self.keypair = self.create_keypair()
+        self.validation_resources = self.get_test_validation_resources(
+            self.os_primary)
+        # NOTE(danms): If validation is enabled, we will have a keypair to use,
+        # otherwise we need to create our own.
+        if 'keypair' in self.validation_resources:
+            self.keypair = self.validation_resources['keypair']
+        else:
+            self.keypair = self.create_keypair()
         self.security_group = self.create_security_group()
 
     @decorators.idempotent_id('ff10644e-5a70-4a9f-9801-8204bb81fb61')
@@ -48,6 +55,9 @@ class SnapshotDataIntegrityTests(manager.ScenarioTest):
         # Create an instance
         server = self.create_server(
             key_name=self.keypair['name'],
+            validatable=True,
+            validation_resources=self.validation_resources,
+            wait_until='SSHABLE',
             security_groups=[{'name': self.security_group['name']}])
 
         # Create an empty volume

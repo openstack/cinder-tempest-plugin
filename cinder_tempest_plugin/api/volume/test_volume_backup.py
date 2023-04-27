@@ -31,6 +31,16 @@ class VolumesBackupsTest(base.BaseVolumeTest):
         if not CONF.volume_feature_enabled.backup:
             raise cls.skipException("Cinder backup feature disabled")
 
+    @classmethod
+    def setup_credentials(cls):
+        # Setting network=True, subnet=True creates a default network
+        cls.set_network_resources(
+            network=True,
+            subnet=True,
+            router=True,
+            dhcp=True)
+        super(VolumesBackupsTest, cls).setup_credentials()
+
     @decorators.idempotent_id('885410c6-cd1d-452c-a409-7c32b7e0be15')
     def test_volume_snapshot_backup(self):
         """Create backup from snapshot."""
@@ -107,7 +117,7 @@ class VolumesBackupsTest(base.BaseVolumeTest):
         server = self.create_server(
             name=server_name,
             block_device_mapping=bd_map,
-            wait_until='ACTIVE')
+            wait_until='SSHABLE')
 
         # Delete VM
         self.os_primary.servers_client.delete_server(server['id'])
