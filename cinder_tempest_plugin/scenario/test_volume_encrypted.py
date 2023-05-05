@@ -38,11 +38,6 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
     def resource_cleanup(cls):
         super(TestEncryptedCinderVolumes, cls).resource_cleanup()
 
-    def launch_instance(self):
-        keypair = self.create_keypair()
-
-        return self.create_server(key_name=keypair['name'])
-
     def attach_detach_volume(self, server, volume):
         attached_volume = self.nova_volume_attach(server, volume)
         self.nova_volume_detach(server, attached_volume)
@@ -108,7 +103,11 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
             self.volumes_client, volume_s['id'], 'available')
         volume_source = self.volumes_client.show_volume(
             volume_s['id'])['volume']
-        server = self.launch_instance()
+        validation_resources = self.get_test_validation_resources(
+            self.os_primary)
+        server = self.create_server(wait_until='SSHABLE',
+                                    validatable=True,
+                                    validation_resources=validation_resources)
         self.attach_detach_volume(server, volume_source)
 
     @decorators.idempotent_id('5bb622ab-5060-48a8-8840-d589a548b7e4')

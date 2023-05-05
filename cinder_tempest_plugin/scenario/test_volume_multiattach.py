@@ -31,7 +31,14 @@ class VolumeMultiattachTests(manager.ScenarioTest,
 
     def setUp(self):
         super(VolumeMultiattachTests, self).setUp()
-        self.keypair = self.create_keypair()
+        self.validation_resources = self.get_test_validation_resources(
+            self.os_primary)
+        # NOTE(danms): If validation is enabled, we will have a keypair to use,
+        # otherwise we need to create our own.
+        if 'keypair' in self.validation_resources:
+            self.keypair = self.validation_resources['keypair']
+        else:
+            self.keypair = self.create_keypair()
         self.security_group = self.create_security_group()
 
     @classmethod
@@ -52,6 +59,9 @@ class VolumeMultiattachTests(manager.ScenarioTest,
         # Create an instance
         server_1 = self.create_server(
             key_name=self.keypair['name'],
+            wait_until='SSHABLE',
+            validatable=True,
+            validation_resources=self.validation_resources,
             security_groups=[{'name': self.security_group['name']}])
 
         # Create multiattach type
@@ -92,6 +102,9 @@ class VolumeMultiattachTests(manager.ScenarioTest,
         # Create another instance
         server_2 = self.create_server(
             key_name=self.keypair['name'],
+            validatable=True,
+            validation_resources=self.validation_resources,
+            wait_until='SSHABLE',
             security_groups=[{'name': self.security_group['name']}])
 
         instance_2_ip = self.get_server_ip(server_2)
@@ -117,6 +130,9 @@ class VolumeMultiattachTests(manager.ScenarioTest,
         # Create an instance
         server = self.create_server(
             key_name=self.keypair['name'],
+            validatable=True,
+            validation_resources=self.validation_resources,
+            wait_until='SSHABLE',
             security_groups=[{'name': self.security_group['name']}])
 
         # Create multiattach type

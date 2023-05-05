@@ -138,6 +138,11 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
             'name',
             data_utils.rand_name(self.__class__.__name__ + '-instance'))
 
+        if wait_until == 'SSHABLE' and not kwargs.get('validation_resources'):
+            kwargs['validation_resources'] = (
+                self.get_test_validation_resources(self.os_primary))
+            kwargs['validatable'] = True
+
         tenant_network = self.get_tenant_network()
         body, _ = compute.create_test_server(
             self.os_primary,
