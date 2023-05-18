@@ -217,6 +217,8 @@
               volume_revert: True
       devstack_services:
         c-bak: true
+      devstack_localrc:
+        CINDER_QUOTA_VOLUMES: 25
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph-zed
