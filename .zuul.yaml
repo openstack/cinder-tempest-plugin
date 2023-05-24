@@ -83,6 +83,7 @@
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+    timeout: 10800
 
 - job:
     name: cinder-tempest-plugin-lvm-barbican-base-abstract
@@ -219,6 +220,7 @@
         c-bak: true
       devstack_localrc:
         CINDER_QUOTA_VOLUMES: 25
+    timeout: 10800
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph-zed
