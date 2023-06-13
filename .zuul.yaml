@@ -15,6 +15,7 @@
             voting: false
         - cinder-tempest-plugin-lvm-lio-barbican-fips:
             voting: false
+        - cinder-tempest-plugin-lvm-nvmet-barbican
         - nova-ceph-multistore:
             voting: false
         - cinder-tempest-plugin-cbak-ceph
@@ -31,6 +32,7 @@
     gate:
       jobs:
         - cinder-tempest-plugin-lvm-lio-barbican
+        - cinder-tempest-plugin-lvm-nvmet-barbican
         # FIXME: no sense running a non-voting gate job.  See comment above.
         # - cinder-tempest-plugin-lvm-tgt-barbican
         - cinder-tempest-plugin-cbak-ceph
@@ -323,6 +325,40 @@
       configure_swap_size: 4096
       nslookup_target: 'opendev.org'
       tempest_exclude_regex: 'test_encrypted_cinder_volumes_cryptsetup'
+
+- job:
+    name: cinder-tempest-plugin-lvm-nvmet-barbican
+    description: |
+      This jobs configures Cinder with LVM, nvmet, barbican and
+      runs tempest tests and cinderlib tests.  nvmet is
+      configured to use the new connection information format,
+      NVMe-oF native multipathing, and sharing the NVMe-oF
+      namespace for all the connections to the same node.
+    # TODO: switch to cinder-tempest-plugin-lvm-barbican-base
+    # when cinderlib support for NVMe is fixed
+    parent: cinder-tempest-plugin-lvm-barbican-base-abstract
+    pre-run: playbooks/install-multipath.yaml
+    vars:
+      devstack_localrc:
+        CINDER_TARGET_HELPER: nvmet
+        CINDER_TARGET_PROTOCOL: nvmet_tcp
+        TEMPEST_STORAGE_PROTOCOL: nvmeof
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            volume-feature-enabled:
+              # NotImplementedError: Revert volume to snapshot not implemented for thin LVM.
+              volume_revert: False
+        post-config:
+          $NOVA_CONF:
+            libvirt:
+              volume_use_multipath: true
+          $CINDER_CONF:
+            lvmdriver-1:
+              nvmeof_conn_info_version: 2
+              lvm_share_target: true
+              target_secondary_ip_addresses: 127.0.0.1
+              use_multipath_for_image_xfer: true
 
 - job:
     name: cinder-tempest-plugin-lvm-tgt-barbican

@@ -1,0 +1,22 @@
+- hosts: tempest
+  vars:
+    mpath_package: "{{ 'device-mapper-multipath' if ansible_os_family == 'RedHat' else 'multipath-tools' }}"
+  tasks:
+    - name: Install multipath package on RedHat systems
+      package:
+        name: "{{ mpath_package }}"
+        state: present
+      become: yes
+
+    - name: Create configuration
+      command: mpathconf --enable --with_multipathd y --user_friendly_names n --find_multipaths y
+      args:
+        creates: /etc/multipath.conf
+      become: yes
+
+    - name: Start and enable on boot the multipath daemon
+      service:
+        name: multipathd
+        state: started
+        enabled: yes
+      become: yes
