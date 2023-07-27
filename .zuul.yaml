@@ -230,7 +230,7 @@
       - name: opendev.org/openstack/cinder-tempest-plugin
         override-checkout: stein-last
     vars:
-      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-blacklist.txt'
+      tempest_test_blacklist: '{{ ansible_user_dir }}/{{ zuul.projects["opendev.org/openstack/tempest"].src_dir }}/tools/tempest-integrated-gate-storage-exclude-list.txt'
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph
