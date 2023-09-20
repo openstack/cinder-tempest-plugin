@@ -13,7 +13,6 @@
 
 from tempest.common import waiters
 from tempest import config
-from tempest.lib.common import api_microversion_fixture
 from tempest.lib.common import api_version_utils
 from tempest.lib.common.utils import data_utils
 from tempest.lib.common.utils import test_utils
@@ -51,8 +50,6 @@ class VolumeV3RbacBaseTests(
 
     def setUp(self):
         super(VolumeV3RbacBaseTests, self).setUp()
-        self.useFixture(api_microversion_fixture.APIMicroversionFixture(
-            volume_microversion=self.request_microversion))
 
     @classmethod
     def resource_setup(cls):
@@ -61,6 +58,8 @@ class VolumeV3RbacBaseTests(
             api_version_utils.select_request_microversion(
                 cls.min_microversion,
                 CONF.volume.min_microversion))
+        cls.setup_api_microversion_fixture(
+            volume_microversion=cls.request_microversion)
 
     def do_request(self, method, expected_status=200, client=None, **payload):
         """Perform API call
