@@ -136,7 +136,7 @@
     description: |
       This is a base job for lvm with lio & tgt targets
       with cinderlib tests.
-    branches: ^(?!stable/(ocata|pike|queens|rocky|stein|train|ussuri|victoria|wallaby)).*$
+    branches: ^(master|stable/(xena|yoga|zed|2\d\d\d\.[12])).*$
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
     roles:
       - zuul: opendev.org/openstack/cinderlib
@@ -224,7 +224,7 @@
     name: cinder-tempest-plugin-lvm-barbican-base
     description: |
       This is a base job for lvm with lio & tgt targets
-    branches: ^(?=stable/(ocata|pike|queens|rocky|stein)).*$
+    branches: ^stable/(ocata|pike|queens|rocky|stein).*$
     parent: cinder-tempest-plugin-lvm-barbican-base-abstract
     required-projects:
       - name: opendev.org/openstack/cinder-tempest-plugin
@@ -279,7 +279,7 @@
 # should this job be used on those branches
 - job:
     name: cinder-tempest-plugin-cbak-ceph
-    branches: ^(?=stable/(ocata|pike|queens|rocky|stein|train)).*$
+    branches: ^stable/(ocata|pike|queens|rocky|stein|train).*$
     vars:
       devstack_local_conf:
         test-config:
