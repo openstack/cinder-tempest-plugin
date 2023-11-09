@@ -110,7 +110,6 @@ class ScenarioTest(manager.ScenarioTest):
                 (mount_path, filename))
             md5 = ssh_client.exec_command(
                 'sudo md5sum -b %s/%s|cut -c 1-32' % (mount_path, filename))
-            ssh_client.exec_command('sudo sync')
         return md5
 
     def get_md5_from_file(self, instance, instance_ip, filename,
