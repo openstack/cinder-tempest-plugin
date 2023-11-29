@@ -71,18 +71,25 @@ class VolumeMultiattachTests(manager.ScenarioTest,
         # Create a multiattach volume
         volume = self.create_volume(volume_type=multiattach_vol_type['id'])
 
-        # Create encrypted volume
-        encrypted_volume = self.create_encrypted_volume(
-            'luks', volume_type='luks')
+        # Create a volume with the default volume type
+        default_volume = self.create_volume()
 
-        # Create a normal volume
-        simple_volume = self.create_volume()
+        # Create other volume
+        if CONF.compute_feature_enabled.attach_encrypted_volume:
+            other_volume = self.create_encrypted_volume(
+                'luks', volume_type='luks')
+        else:
+            # Create secondary volume type
+            second_vol_type = self.create_volume_type()
 
-        # Attach normal and encrypted volumes (These volumes are not used in
+            other_volume = self.create_volume(
+                volume_type=second_vol_type['id'])
+
+        # Attach default and secondary volumes (These volumes are not used in
         # the current test but is used to emulate a real world scenario
         # where different types of volumes will be attached to the server)
-        self.attach_volume(server_1, simple_volume)
-        self.attach_volume(server_1, encrypted_volume)
+        self.attach_volume(server_1, default_volume)
+        self.attach_volume(server_1, other_volume)
 
         instance_ip = self.get_server_ip(server_1)
 
