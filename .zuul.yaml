@@ -51,10 +51,13 @@
     vars:
       tox_envlist: all
       tempest_test_regex: 'cinder_tempest_plugin.rbac'
+      devstack_localrc:
+        KEYSTONE_ENFORCE_SCOPE: True
       devstack_local_conf:
         test-config:
           $CINDER_CONF:
             oslo_policy:
+              enforce_scope: True
               enforce_new_defaults: True
           $TEMPEST_CONFIG:
             enforce_scope:
