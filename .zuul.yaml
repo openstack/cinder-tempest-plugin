@@ -25,9 +25,9 @@
         # branches. That is what we need to do for all tempest plugins. Only jobs
         # for the current releasable ("Maintained") stable branches should be listed
         # here.
+        - cinder-tempest-plugin-basic-2023-2
         - cinder-tempest-plugin-basic-2023-1
         - cinder-tempest-plugin-basic-zed
-        - cinder-tempest-plugin-basic-yoga
         - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
@@ -38,9 +38,9 @@
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
+        - cinder-tempest-plugin-cbak-ceph-2023-2
         - cinder-tempest-plugin-cbak-ceph-2023-1
         - cinder-tempest-plugin-cbak-ceph-zed
-        - cinder-tempest-plugin-cbak-ceph-yoga
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -269,6 +269,12 @@
     timeout: 10800
 
 - job:
+    name: cinder-tempest-plugin-cbak-ceph-2023-2
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2023.2
+
+- job:
     name: cinder-tempest-plugin-cbak-ceph-2023-1
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-jammy
@@ -279,12 +285,6 @@
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-focal
     override-checkout: stable/zed
-
-- job:
-    name: cinder-tempest-plugin-cbak-ceph-yoga
-    parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-focal
-    override-checkout: stable/yoga
 
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
@@ -416,6 +416,12 @@
       - ^releasenotes/.*$
 
 - job:
+    name: cinder-tempest-plugin-basic-2023-2
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2023.2
+
+- job:
     name: cinder-tempest-plugin-basic-2023-1
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-jammy
@@ -426,9 +432,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-focal
     override-checkout: stable/zed
-
-- job:
-    name: cinder-tempest-plugin-basic-yoga
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-focal
-    override-checkout: stable/yoga
