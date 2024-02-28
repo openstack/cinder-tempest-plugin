@@ -16,7 +16,6 @@
 from tempest.common import compute
 from tempest.common import waiters
 from tempest import config
-from tempest.lib.common import api_microversion_fixture
 from tempest.lib.common import api_version_utils
 from tempest.lib.common.utils import data_utils
 from tempest.lib.common.utils import test_utils
@@ -57,8 +56,6 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
 
     def setUp(self):
         super(BaseVolumeTest, self).setUp()
-        self.useFixture(api_microversion_fixture.APIMicroversionFixture(
-            volume_microversion=self.request_microversion))
 
     @classmethod
     def resource_setup(cls):
@@ -67,6 +64,8 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
             api_version_utils.select_request_microversion(
                 cls.min_microversion,
                 CONF.volume.min_microversion))
+        cls.setup_api_microversion_fixture(
+            volume_microversion=cls.request_microversion)
 
     @classmethod
     def create_volume(cls, wait_until='available', **kwargs):
