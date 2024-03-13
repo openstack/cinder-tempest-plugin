@@ -35,7 +35,6 @@ class VolumeRevertTests(base.BaseVolumeTest):
 
     @classmethod
     def setup_clients(cls):
-        cls._api_version = 3
         super(VolumeRevertTests, cls).setup_clients()
 
         manager = cinder_clients.Manager(cls.os_primary)
