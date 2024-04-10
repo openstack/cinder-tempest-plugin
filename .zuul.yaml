@@ -21,12 +21,12 @@
         - cinder-tempest-plugin-cbak-ceph
         - cinder-tempest-plugin-cbak-s3
         # As per the Tempest "Stable Branch Support Policy", Tempest will only
-        # support the "Maintained" stable branches and not the "Extended Maintained"
-        # branches. That is what we need to do for all tempest plugins. Only jobs
-        # for the current releasable ("Maintained") stable branches should be listed
-        # here.
+        # support the "Maintained" stable branches, so only jobs for the
+        # current stable branches should be listed here.
+        - cinder-tempest-plugin-basic-2024-1
         - cinder-tempest-plugin-basic-2023-2
         - cinder-tempest-plugin-basic-2023-1
+        # TODO: remove when zed goes Unmaintained (early in Dalmatian cycle)
         - cinder-tempest-plugin-basic-zed
         - cinder-tempest-plugin-protection-functional
     gate:
@@ -38,9 +38,9 @@
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
+        - cinder-tempest-plugin-cbak-ceph-2024-1
         - cinder-tempest-plugin-cbak-ceph-2023-2
         - cinder-tempest-plugin-cbak-ceph-2023-1
-        - cinder-tempest-plugin-cbak-ceph-zed
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -269,6 +269,12 @@
     timeout: 10800
 
 - job:
+    name: cinder-tempest-plugin-cbak-ceph-2024-1
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2024.1
+
+- job:
     name: cinder-tempest-plugin-cbak-ceph-2023-2
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-jammy
@@ -279,12 +285,6 @@
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-jammy
     override-checkout: stable/2023.1
-
-- job:
-    name: cinder-tempest-plugin-cbak-ceph-zed
-    parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-focal
-    override-checkout: stable/zed
 
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
@@ -414,6 +414,12 @@
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+
+- job:
+    name: cinder-tempest-plugin-basic-2024-1
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2024.1
 
 - job:
     name: cinder-tempest-plugin-basic-2023-2
