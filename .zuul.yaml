@@ -26,8 +26,6 @@
         - cinder-tempest-plugin-basic-2024-1
         - cinder-tempest-plugin-basic-2023-2
         - cinder-tempest-plugin-basic-2023-1
-        # TODO: remove when zed goes Unmaintained (early in Dalmatian cycle)
-        - cinder-tempest-plugin-basic-zed
         - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
@@ -432,9 +430,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-jammy
     override-checkout: stable/2023.1
-
-- job:
-    name: cinder-tempest-plugin-basic-zed
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-focal
-    override-checkout: stable/zed
