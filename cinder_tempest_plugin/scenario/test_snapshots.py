@@ -130,8 +130,9 @@ class SnapshotDataIntegrityTests(manager.ScenarioTest):
 
 
 class SnapshotDependencyTests(manager.ScenarioTest):
-    @testtools.skipUnless(CONF.volume_feature_enabled.volume_image_dep_tests,
-                          'dependency tests not enabled')
+    @testtools.skipUnless(
+        CONF.volume_feature_enabled.enable_volume_image_dep_tests,
+        'dependency tests not enabled')
     @decorators.idempotent_id('e7028f52-f6d4-479c-8809-6f6cf96cfe0f')
     @utils.services('image', 'volume')
     def test_snapshot_removal(self):
