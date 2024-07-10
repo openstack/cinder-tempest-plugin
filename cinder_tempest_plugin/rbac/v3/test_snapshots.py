@@ -17,6 +17,8 @@ from tempest.lib.common.utils import test_utils
 from tempest.lib import decorators
 from tempest.lib import exceptions
 
+import testtools
+
 from cinder_tempest_plugin.rbac.v3 import base as rbac_base
 
 CONF = config.CONF
@@ -309,10 +311,15 @@ class ProjectReaderTests(VolumeV3RbacSnapshotsTests):
     def test_force_delete_snapshot(self):
         self._force_delete_snapshot(expected_status=exceptions.Forbidden)
 
+    # We don't need to skip the unmanage because the failure should happen at
+    # the API level, so it should fail regardless of the driver support for
+    # unmanaging snapshots.
     @decorators.idempotent_id('35495666-b663-4c68-ba44-0695e30a6838')
     def test_unmanage_snapshot(self):
         self._unmanage_snapshot(expected_status=exceptions.Forbidden)
 
+    @testtools.skipUnless(CONF.volume_feature_enabled.manage_snapshot,
+                          'manage snapshots are disabled')
     @decorators.idempotent_id('d2d1326d-fb47-4448-a1e1-2d1219d30fd5')
     def test_manage_snapshot(self):
         self._manage_snapshot(
@@ -362,10 +369,15 @@ class ProjectMemberTests(VolumeV3RbacSnapshotsTests):
     def test_force_delete_snapshot(self):
         self._force_delete_snapshot(expected_status=exceptions.Forbidden)
 
+    # We don't need to skip the unmanage because the failure should happen at
+    # the API level, so it should fail regardless of the driver support for
+    # unmanaging snapshots.
     @decorators.idempotent_id('dd7da3da-68ef-42f5-af1d-29803a4a04fd')
     def test_unmanage_snapshot(self):
         self._unmanage_snapshot(expected_status=exceptions.Forbidden)
 
+    @testtools.skipUnless(CONF.volume_feature_enabled.manage_snapshot,
+                          'manage snapshots are disabled')
     @decorators.idempotent_id('c2501d05-9bca-42d7-9ab5-c0d9133e762f')
     def test_manage_snapshot(self):
         self._manage_snapshot(
