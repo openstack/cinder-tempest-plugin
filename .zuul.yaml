@@ -309,7 +309,7 @@
     parent: cinder-tempest-plugin-lvm-barbican-base
     vars:
       devstack_localrc:
-        CINDER_ISCSI_HELPER: lioadm
+        CINDER_TARGET_HELPER: lioadm
 
 - job:
     name: cinder-tempest-plugin-lvm-lio-barbican-centos-8-stream
@@ -381,7 +381,7 @@
     parent: cinder-tempest-plugin-lvm-barbican-base
     vars:
       devstack_localrc:
-        CINDER_ISCSI_HELPER: tgtadm
+        CINDER_TARGET_HELPER: tgtadm
 
 - job:
     name: cinder-tempest-plugin-cbak-s3
