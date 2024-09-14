@@ -312,14 +312,6 @@
         CINDER_TARGET_HELPER: lioadm
 
 - job:
-    name: cinder-tempest-plugin-lvm-lio-barbican-centos-8-stream
-    parent: cinder-tempest-plugin-lvm-lio-barbican
-    nodeset: devstack-single-node-centos-8-stream
-    description: |
-      This jobs configures Cinder with LVM, LIO, barbican and
-      runs tempest tests and cinderlib tests on CentOS Stream 8.
-
-- job:
     name: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
     parent: cinder-tempest-plugin-lvm-lio-barbican
     nodeset: devstack-single-node-centos-9-stream
