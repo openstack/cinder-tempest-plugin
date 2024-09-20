@@ -41,6 +41,8 @@ class TransferEncryptedVolumeTest(manager.EncryptionScenarioTest):
     @classmethod
     def skip_checks(cls):
         super(TransferEncryptedVolumeTest, cls).skip_checks()
+        if not CONF.compute_feature_enabled.attach_encrypted_volume:
+            raise cls.skipException('Encrypted volume attach is not supported')
         if not CONF.service_available.barbican:
             raise cls.skipException('Barbican is required')
 
