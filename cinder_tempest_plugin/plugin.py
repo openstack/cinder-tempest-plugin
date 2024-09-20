@@ -69,3 +69,26 @@ class CinderTempestPlugin(plugins.TempestPlugin):
                               project_config.barbican_service_option))
 
         return opt_lists
+
+    def get_service_clients(self):
+        volumes_config = config.service_client_config('volume')
+
+        consistencygroups_params = {
+            'name': 'consistencygroups_v3',
+            'service_version': 'consistencygroups.v3',
+            'module_path': 'cinder_tempest_plugin.services.'
+                           'consistencygroups_client',
+            'client_names': ['ConsistencyGroupsClient'],
+        }
+        consistencygroups_params.update(volumes_config)
+
+        volumerevert_params = {
+            'name': 'volume_revert_v3',
+            'service_version': 'volume_revert.v3',
+            'module_path': 'cinder_tempest_plugin.services.'
+                           'volume_revert_client',
+            'client_names': ['VolumeRevertClient'],
+        }
+        volumerevert_params.update(volumes_config)
+
+        return [consistencygroups_params, volumerevert_params]

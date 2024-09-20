@@ -19,7 +19,6 @@ from tempest.lib import decorators
 from tempest.lib import exceptions
 
 from cinder_tempest_plugin.api.volume import base
-from cinder_tempest_plugin import cinder_clients
 
 CONF = config.CONF
 
@@ -32,13 +31,6 @@ class VolumeRevertTests(base.BaseVolumeTest):
         super(VolumeRevertTests, cls).skip_checks()
         if not CONF.volume_feature_enabled.volume_revert:
             raise cls.skipException("Cinder volume revert feature disabled")
-
-    @classmethod
-    def setup_clients(cls):
-        super(VolumeRevertTests, cls).setup_clients()
-
-        manager = cinder_clients.Manager(cls.os_primary)
-        cls.volume_revert_client = manager.volume_revert_client
 
     def setUp(self):
         super(VolumeRevertTests, self).setUp()

@@ -14,27 +14,19 @@
 #    under the License.
 
 from tempest import config
-
-from cinder_tempest_plugin.services import consistencygroups_client
-from cinder_tempest_plugin.services import volume_revert_client
+from tempest.lib.services import clients
 
 CONF = config.CONF
 
 
-class Manager(object):
-    def __init__(self, base_manager):
-        params = {
-            'service': CONF.volume.catalog_type,
-            'region': CONF.volume.region or CONF.identity.region,
-            'endpoint_type': CONF.volume.endpoint_type,
-            'build_interval': CONF.volume.build_interval,
-            'build_timeout': CONF.volume.build_timeout
-        }
-        params.update(base_manager.default_params)
-        auth_provider = base_manager.auth_provider
+class Clients(clients.ServiceClients):
+    """Tempest stable service clients and loaded plugins service clients"""
 
-        self.consistencygroups_adm_client = (
-            consistencygroups_client.ConsistencyGroupsClient(auth_provider,
-                                                             **params))
-        self.volume_revert_client = (
-            volume_revert_client.VolumeRevertClient(auth_provider, **params))
+    def __init__(self, credentials, service=None):
+        """Emulate the interface of Tempest's clients.Manager"""
+        # Identity settings
+        if CONF.identity.auth_version == 'v2':
+            identity_uri = CONF.identity.uri
+        else:
+            identity_uri = CONF.identity.uri_v3
+        super(Clients, self).__init__(credentials, identity_uri)

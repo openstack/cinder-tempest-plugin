@@ -50,6 +50,9 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
         cls.backups_client = cls.os_primary.backups_client_latest
         cls.volumes_client = cls.os_primary.volumes_client_latest
         cls.snapshots_client = cls.os_primary.snapshots_client_latest
+        cls.volume_revert_client = (
+            cls.os_primary.volume_revert_v3.VolumeRevertClient()
+        )
 
     @classmethod
     def setup_credentials(cls):
@@ -196,6 +199,9 @@ class BaseVolumeAdminTest(BaseVolumeTest):
         cls.admin_volume_types_client = cls.os_admin.volume_types_client_latest
         cls.admin_backups_client = cls.os_admin.backups_client_latest
         cls.admin_volume_client = cls.os_admin.volumes_client_latest
+        cls.admin_consistencygroups_client = (
+            cls.os_admin.consistencygroups_v3.ConsistencyGroupsClient()
+        )
 
     @classmethod
     def create_volume_type(cls, name=None, **kwargs):
