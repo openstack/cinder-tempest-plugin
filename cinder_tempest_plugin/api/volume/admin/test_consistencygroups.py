@@ -20,18 +20,11 @@ from tempest.lib.common.utils import data_utils
 from tempest.lib import decorators
 
 from cinder_tempest_plugin.api.volume import base
-from cinder_tempest_plugin import cinder_clients
 
 CONF = config.CONF
 
 
 class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
-    @classmethod
-    def setup_clients(cls):
-        super(ConsistencyGroupsV2Test, cls).setup_clients()
-
-        manager = cinder_clients.Manager(cls.os_admin)
-        cls.consistencygroups_adm_client = manager.consistencygroups_adm_client
 
     @classmethod
     def skip_checks(cls):
@@ -41,16 +34,16 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
                                     "feature disabled")
 
     def _delete_consistencygroup(self, cg_id):
-        self.consistencygroups_adm_client.delete_consistencygroup(cg_id)
+        self.admin_consistencygroups_client.delete_consistencygroup(cg_id)
         vols = self.admin_volume_client.list_volumes(detail=True)['volumes']
         for vol in vols:
             if vol['consistencygroup_id'] == cg_id:
                 self.admin_volume_client.wait_for_resource_deletion(vol['id'])
-        self.consistencygroups_adm_client.wait_for_consistencygroup_deletion(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_deletion(
             cg_id)
 
     def _delete_cgsnapshot(self, cgsnapshot_id, cg_id):
-        self.consistencygroups_adm_client.delete_cgsnapshot(cgsnapshot_id)
+        self.admin_consistencygroups_client.delete_cgsnapshot(cgsnapshot_id)
         vols = self.admin_volume_client.list_volumes(detail=True)['volumes']
         snapshots = self.os_admin.snapshots_v2_client.list_snapshots(
             detail=True)['snapshots']
@@ -60,7 +53,7 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
                         vol['id'] == snap['volume_id']):
                     (self.snapshots_client.
                      wait_for_resource_deletion(snap['id']))
-        self.consistencygroups_adm_client.wait_for_cgsnapshot_deletion(
+        self.admin_consistencygroups_client.wait_for_cgsnapshot_deletion(
             cgsnapshot_id)
 
     @decorators.idempotent_id('3fe776ba-ec1f-4e6c-8d78-4b14c3a7fc44')
@@ -73,10 +66,10 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create CG
         cg_name = data_utils.rand_name('CG')
         create_consistencygroup = (
-            self.consistencygroups_adm_client.create_consistencygroup)
+            self.admin_consistencygroups_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_status(
             cg['id'], 'available')
         self.assertEqual(cg_name, cg['name'])
 
@@ -92,12 +85,12 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
                                                 volume['id'], 'available')
 
         # Get a given CG
-        cg = self.consistencygroups_adm_client.show_consistencygroup(
+        cg = self.admin_consistencygroups_client.show_consistencygroup(
             cg['id'])['consistencygroup']
         self.assertEqual(cg_name, cg['name'])
 
         # Get all CGs with detail
-        cgs = self.consistencygroups_adm_client.list_consistencygroups(
+        cgs = self.admin_consistencygroups_client.list_consistencygroups(
             detail=True)['consistencygroups']
         self.assertIn((cg['name'], cg['id']),
                       [(m['name'], m['id']) for m in cgs])
@@ -117,10 +110,10 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create CG
         cg_name = data_utils.rand_name('CG')
         create_consistencygroup = (
-            self.consistencygroups_adm_client.create_consistencygroup)
+            self.admin_consistencygroups_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_status(
             cg['id'], 'available')
         self.assertEqual(cg_name, cg['name'])
 
@@ -137,10 +130,10 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create cgsnapshot
         cgsnapshot_name = data_utils.rand_name('cgsnapshot')
         create_cgsnapshot = (
-            self.consistencygroups_adm_client.create_cgsnapshot)
+            self.admin_consistencygroups_client.create_cgsnapshot)
         cgsnapshot = create_cgsnapshot(cg['id'],
                                        name=cgsnapshot_name)['cgsnapshot']
-        self.consistencygroups_adm_client.wait_for_cgsnapshot_status(
+        self.admin_consistencygroups_client.wait_for_cgsnapshot_status(
             cgsnapshot['id'], 'available')
         self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
         snapshots = self.os_admin.snapshots_v2_client.list_snapshots(
@@ -152,12 +145,12 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
                     snap['id'], 'available')
 
         # Get a given CG snapshot
-        cgsnapshot = self.consistencygroups_adm_client.show_cgsnapshot(
+        cgsnapshot = self.admin_consistencygroups_client.show_cgsnapshot(
             cgsnapshot['id'])['cgsnapshot']
         self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
 
         # Get all CG snapshots with detail
-        cgsnapshots = self.consistencygroups_adm_client.list_cgsnapshots(
+        cgsnapshots = self.admin_consistencygroups_client.list_cgsnapshots(
             detail=True)['cgsnapshots']
         self.assertIn((cgsnapshot['name'], cgsnapshot['id']),
                       [(m['name'], m['id']) for m in cgsnapshots])
@@ -177,10 +170,10 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create CG
         cg_name = data_utils.rand_name('CG')
         create_consistencygroup = (
-            self.consistencygroups_adm_client.create_consistencygroup)
+            self.admin_consistencygroups_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_status(
             cg['id'], 'available')
         self.assertEqual(cg_name, cg['name'])
 
@@ -197,10 +190,10 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create cgsnapshot
         cgsnapshot_name = data_utils.rand_name('cgsnapshot')
         create_cgsnapshot = (
-            self.consistencygroups_adm_client.create_cgsnapshot)
+            self.admin_consistencygroups_client.create_cgsnapshot)
         cgsnapshot = create_cgsnapshot(cg['id'],
                                        name=cgsnapshot_name)['cgsnapshot']
-        self.consistencygroups_adm_client.wait_for_cgsnapshot_status(
+        self.admin_consistencygroups_client.wait_for_cgsnapshot_status(
             cgsnapshot['id'], 'available')
         self.assertEqual(cgsnapshot_name, cgsnapshot['name'])
         snapshots = self.snapshots_client.list_snapshots(
@@ -213,10 +206,12 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create CG from CG snapshot
         cg_name2 = data_utils.rand_name('CG_from_snap')
         create_consistencygroup2 = (
-            self.consistencygroups_adm_client.create_consistencygroup_from_src)
+            self.admin_consistencygroups_client.
+            create_consistencygroup_from_src
+        )
         cg2 = create_consistencygroup2(cgsnapshot_id=cgsnapshot['id'],
                                        name=cg_name2)['consistencygroup']
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_status(
             cg2['id'], 'available')
         self.assertEqual(cg_name2, cg2['name'])
         vols = self.admin_volume_client.list_volumes(
@@ -242,10 +237,10 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create CG
         cg_name = data_utils.rand_name('CG')
         create_consistencygroup = (
-            self.consistencygroups_adm_client.create_consistencygroup)
+            self.admin_consistencygroups_client.create_consistencygroup)
         cg = create_consistencygroup(volume_type['id'],
                                      name=cg_name)['consistencygroup']
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_status(
             cg['id'], 'available')
         self.assertEqual(cg_name, cg['name'])
 
@@ -262,10 +257,12 @@ class ConsistencyGroupsV2Test(base.BaseVolumeAdminTest):
         # Create CG from CG
         cg_name2 = data_utils.rand_name('CG_from_cg')
         create_consistencygroup2 = (
-            self.consistencygroups_adm_client.create_consistencygroup_from_src)
+            self.admin_consistencygroups_client.
+            create_consistencygroup_from_src
+        )
         cg2 = create_consistencygroup2(source_cgid=cg['id'],
                                        name=cg_name2)['consistencygroup']
-        self.consistencygroups_adm_client.wait_for_consistencygroup_status(
+        self.admin_consistencygroups_client.wait_for_consistencygroup_status(
             cg2['id'], 'available')
         self.assertEqual(cg_name2, cg2['name'])
         vols = self.admin_volume_client.list_volumes(
