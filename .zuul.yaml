@@ -23,6 +23,7 @@
         # As per the Tempest "Stable Branch Support Policy", Tempest will only
         # support the "Maintained" stable branches, so only jobs for the
         # current stable branches should be listed here.
+        - cinder-tempest-plugin-basic-2024-2
         - cinder-tempest-plugin-basic-2024-1
         - cinder-tempest-plugin-basic-2023-2
         - cinder-tempest-plugin-basic-2023-1
@@ -36,6 +37,7 @@
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
+        - cinder-tempest-plugin-cbak-ceph-2024-2
         - cinder-tempest-plugin-cbak-ceph-2024-1
         - cinder-tempest-plugin-cbak-ceph-2023-2
         - cinder-tempest-plugin-cbak-ceph-2023-1
@@ -266,6 +268,12 @@
     timeout: 10800
 
 - job:
+    name: cinder-tempest-plugin-cbak-ceph-2024-2
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2024.2
+
+- job:
     name: cinder-tempest-plugin-cbak-ceph-2024-1
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-jammy
@@ -403,6 +411,12 @@
       - ^.*\.rst$
       - ^doc/.*$
       - ^releasenotes/.*$
+
+- job:
+    name: cinder-tempest-plugin-basic-2024-2
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2024.2
 
 - job:
     name: cinder-tempest-plugin-basic-2024-1
