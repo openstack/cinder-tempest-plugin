@@ -20,7 +20,24 @@ from cinder_tempest_plugin.rbac.v3 import base as rbac_base
 class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
 
     min_microversion = '3.3'
-    extra_spec_key = 'key1'
+    extra_specs = {
+        'key1': 'value1',
+        'multiattach': '<is> False',
+        'volume_backend_name': 'test-backend-name',
+        'RESKEY:availability_zones': 'test-az',
+        'replication_enabled': '<is> False'
+    }
+    extra_specs_keys = list(extra_specs.keys())
+    expected_extra_specs = {
+        "reader": [
+            'multiattach', 'RESKEY:availability_zones', 'replication_enabled'
+        ],
+        "member": [
+            'multiattach', 'RESKEY:availability_zones', 'replication_enabled'
+        ],
+        "admin": extra_specs_keys
+    }
+
     encryption_type_key_cipher = 'cipher'
     create_kwargs = {
         'provider': 'LuksEncryptor',
@@ -52,10 +69,9 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
         # create a volume type
         if not name:
             name = data_utils.rand_name("volume-type")
-        extra_specs = {cls.extra_spec_key: 'value1'}
         params = {'name': name,
                   'description': "description",
-                  'extra_specs': extra_specs,
+                  'extra_specs': cls.extra_specs,
                   'os-volume-type-access:is_public': True}
         volume_type = cls.admin_types_client.create_volume_type(
             **params
@@ -73,6 +89,28 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
             )
 
         return volume_type
+
+    def _extra_specs_content_validator(self, client, extra_specs):
+        """Validation of volume type's extra specs content
+
+        Addition for feature:
+        https://specs.openstack.org/openstack/cinder-specs/specs/xena/
+        expose-cinder-user-visible-extra-specs-spec.html
+
+        This feature allows 'readers' and 'members' to "see" volume type's
+        extra specs:
+        'multiattach', 'RESKEY:availability_zones' and 'replication_enabled'
+
+        Args:
+            client: Client object to be used
+            extra_specs: extra_specs dict from response
+
+        Returns:
+            Boolean: True if lists are equal, false otherwise
+        """
+        role = client.user.split('-')[-1]
+        return (sorted(list(extra_specs.keys())) ==
+                sorted(self.expected_extra_specs[role]))
 
     def _update_volume_type(self, expected_status):
         """Update volume type"""
@@ -112,30 +150,65 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
             expected_status=expected_status,
             volume_type_id=self.volume_type['id']
         )['extra_specs']
-        self.assertIn(
-            self.extra_spec_key,
-            list(extra_specs.keys()),
-            message=f"Key '{self.extra_spec_key}' not found in extra_specs."
+        self.assertTrue(
+            self._extra_specs_content_validator(
+                client=self.client, extra_specs=extra_specs
+            )
         )
 
     def _show_extra_spec_for_volume_type(self, expected_status):
         """Show extra_spec for a volume type"""
-        self.do_request(
+
+        # Using 'multiattach' extra spec because all admin, member and readers
+        # should be able to "see".
+        spec = self.do_request(
             method='show_volume_type_extra_specs',
             expected_status=expected_status,
             volume_type_id=self.volume_type['id'],
-            extra_specs_name=self.extra_spec_key
+            extra_specs_name='multiattach'
+        )
+        self.assertEqual(spec['multiattach'], self.extra_specs['multiattach'])
+
+        # Using 'volume_backend_name' extra spec because only admin should
+        # "see" it.
+        role = self.client.user.split('-')[-1]
+        # 'reader' and 'member' will get 404 (NotFound) if they try to show
+        # the extra spec 'volume_backend_name'
+        try:
+            spec = self.do_request(
+                method='show_volume_type_extra_specs',
+                expected_status=expected_status,
+                volume_type_id=self.volume_type['id'],
+                extra_specs_name='volume_backend_name'
+            )
+        except exceptions.NotFound:
+            # NotFound exception should be thrown for
+            # 'reader' and 'member' only
+            self.assertNotEqual(
+                role, 'admin',
+                "NotFound exception was thrown for admin"
+            )
+            return
+
+        # If no exception thrown, then check the content
+        # Only admin should reach to this point
+        self.assertNotIn(
+            role, ['reader', 'member'],
+            "NotFound should be thrown for non admin role"
+        )
+        self.assertEqual(
+            spec['volume_backend_name'],
+            self.extra_specs['volume_backend_name']
         )
 
     def _update_extra_spec_for_volume_type(self, expected_status):
         """Update extra_spec for a volume type"""
-        spec_name = self.extra_spec_key
-        extra_spec = {spec_name: 'updated value'}
+        extra_spec = {'key1': 'key1 updated value'}
         self.do_request(
             method='update_volume_type_extra_specs',
             expected_status=expected_status,
             volume_type_id=self.volume_type['id'],
-            extra_spec_name=spec_name,
+            extra_spec_name='key1',
             extra_specs=extra_spec
         )
 
@@ -147,15 +220,20 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
             method='delete_volume_type_extra_specs',
             expected_status=expected_status,
             volume_type_id=volume_type['id'],
-            extra_spec_name=self.extra_spec_key
+            extra_spec_name='key1'
         )
 
     def _show_volume_type_detail(self, expected_status):
         """Show volume type"""
-        self.do_request(
+        details = self.do_request(
             method='show_volume_type',
             expected_status=expected_status,
             volume_type_id=self.volume_type['id']
+        )['volume_type']
+        self.assertTrue(
+            self._extra_specs_content_validator(
+                client=self.client, extra_specs=details['extra_specs']
+            )
         )
 
     def _show_default_volume_type(self, expected_status):
@@ -181,10 +259,15 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
 
     def _list_volume_types(self, expected_status):
         """List all volume types"""
-        self.do_request(
+        volume_types = self.do_request(
             method='list_volume_types',
             expected_status=expected_status
-        )
+        )['volume_types']
+        for volume_type in volume_types:
+            if volume_type['id'] == self.volume_type['id']:
+                self._extra_specs_content_validator(
+                    client=self.client, extra_specs=volume_type['extra_specs']
+                )
 
     def _create_volume_type(self, expected_status):
         """Create a volume type"""
@@ -275,14 +358,12 @@ class VolumeTypesReaderTests(RbacV3VolumeTypesTests):
             expected_status=exceptions.Forbidden
         )
 
-    @decorators.skip_because(bug='2018467')
     @decorators.idempotent_id('9499752c-3b27-41a3-8f55-4bdba7297f92')
     def test_list_all_extra_specs_for_volume_type(self):
         self._list_all_extra_specs_for_volume_type(
             expected_status=200
         )
 
-    @decorators.skip_because(bug='2018467')
     @decorators.idempotent_id('a38f7248-3a5b-4e51-8e32-d2dcf9c771ea')
     def test_show_extra_spec_for_volume_type(self):
         self._show_extra_spec_for_volume_type(expected_status=200)
@@ -364,14 +445,12 @@ class VolumeTypesMemberTests(RbacV3VolumeTypesTests):
             expected_status=exceptions.Forbidden
         )
 
-    @decorators.skip_because(bug='2018467')
     @decorators.idempotent_id('82fd0d34-17b3-4f45-bd2e-728c9a8bff8c')
     def test_list_all_extra_specs_for_volume_type(self):
         self._list_all_extra_specs_for_volume_type(
             expected_status=200
         )
 
-    @decorators.skip_because(bug='2018467')
     @decorators.idempotent_id('67aa0b40-7c0a-4ae7-8682-fb4f20abd390')
     def test_show_extra_spec_for_volume_type(self):
         self._show_extra_spec_for_volume_type(expected_status=200)
@@ -457,7 +536,6 @@ class VolumeTypesAdminTests(RbacV3VolumeTypesTests):
             expected_status=200
         )
 
-    @decorators.skip_because(bug='2018467')
     @decorators.idempotent_id('a2cca7b6-0af9-47e5-b8c1-4e0f01822d4e')
     def test_show_extra_spec_for_volume_type(self):
         self._show_extra_spec_for_volume_type(expected_status=200)
