@@ -26,7 +26,6 @@
         - cinder-tempest-plugin-basic-2024-2
         - cinder-tempest-plugin-basic-2024-1
         - cinder-tempest-plugin-basic-2023-2
-        - cinder-tempest-plugin-basic-2023-1
         - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
@@ -40,7 +39,6 @@
         - cinder-tempest-plugin-cbak-ceph-2024-2
         - cinder-tempest-plugin-cbak-ceph-2024-1
         - cinder-tempest-plugin-cbak-ceph-2023-2
-        - cinder-tempest-plugin-cbak-ceph-2023-1
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -285,12 +283,6 @@
     nodeset: openstack-single-node-jammy
     override-checkout: stable/2023.2
 
-- job:
-    name: cinder-tempest-plugin-cbak-ceph-2023-1
-    parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-jammy
-    override-checkout: stable/2023.1
-
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
 - job:
@@ -429,9 +421,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-jammy
     override-checkout: stable/2023.2
-
-- job:
-    name: cinder-tempest-plugin-basic-2023-1
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-jammy
-    override-checkout: stable/2023.1
