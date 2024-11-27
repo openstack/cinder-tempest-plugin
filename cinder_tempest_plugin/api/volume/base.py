@@ -91,6 +91,10 @@ class BaseVolumeTest(api_version_utils.BaseMicroversionTest,
             name = data_utils.rand_name(cls.__name__ + '-Volume')
             kwargs['name'] = name
 
+        if CONF.compute.compute_volume_common_az:
+            kwargs.setdefault('availability_zone',
+                              CONF.compute.compute_volume_common_az)
+
         volume = cls.volumes_client.create_volume(**kwargs)['volume']
         cls.addClassResourceCleanup(
             cls.volumes_client.wait_for_resource_deletion, volume['id'])
