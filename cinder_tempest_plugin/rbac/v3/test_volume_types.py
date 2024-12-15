@@ -82,6 +82,9 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
             cls.encryption_type = \
                 cls.admin_encryption_types_client.create_encryption_type(
                     volume_type['id'], **cls.create_kwargs)['encryption']
+            # NOTE: strictly speaking, this is NOT a volume_type field;
+            # we save it for convenience in these tests
+            volume_type['encryption_id'] = cls.encryption_type['encryption_id']
 
         if cleanup:
             cls.addClassResourceCleanup(
@@ -309,7 +312,8 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
             method='delete_encryption_type',
             expected_status=expected_status,
             client=self.encryption_types_client,
-            volume_type_id=volume_type['id']
+            volume_type_id=volume_type['id'],
+            encryption_id=volume_type['encryption_id']
         )
 
     def _create_encryption_type(self, expected_status):
@@ -333,6 +337,7 @@ class RbacV3VolumeTypesTests(rbac_base.VolumeV3RbacBaseTests):
             expected_status=expected_status,
             client=self.encryption_types_client,
             volume_type_id=self.volume_type['id'],
+            encryption_id=self.volume_type['encryption_id'],
             **update_kwargs
         )
 
