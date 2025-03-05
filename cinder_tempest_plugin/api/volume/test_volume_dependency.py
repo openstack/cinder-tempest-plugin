@@ -147,8 +147,9 @@ class VolumeImageDependencyTests(base.BaseVolumeTest):
         images_client.delete_image(image_id)
         images_client.wait_for_resource_deletion(image_id)
 
-    @testtools.skipUnless(CONF.volume_feature_enabled.volume_image_dep_tests,
-                          reason='Volume/image dependency tests not enabled.')
+    @testtools.skipUnless(
+        CONF.volume_feature_enabled.enable_volume_image_dep_tests,
+        reason='Volume/image dependency tests not enabled.')
     @utils.services('image', 'volume')
     @decorators.idempotent_id('7a9fba78-2e4b-42b1-9898-bb4a60685320')
     def test_image_volume_dependencies_1(self):
@@ -174,8 +175,9 @@ class VolumeImageDependencyTests(base.BaseVolumeTest):
 
         self.del_image(image['id'])
 
-    @testtools.skipUnless(CONF.volume_feature_enabled.volume_image_dep_tests,
-                          reason='Volume/image dependency tests not enabled.')
+    @testtools.skipUnless(
+        CONF.volume_feature_enabled.enable_volume_image_dep_tests,
+        reason='Volume/image dependency tests not enabled.')
     @utils.services('image', 'volume')
     @decorators.idempotent_id('0e20bd6e-440f-41d8-9b5d-fc047ac00423')
     def test_image_volume_dependencies_2(self):
@@ -210,8 +212,9 @@ class VolumeImageDependencyTests(base.BaseVolumeTest):
 
         self.del_image(image['id'])
 
-    @testtools.skipUnless(CONF.volume_feature_enabled.volume_image_dep_tests,
-                          reason='Volume/image dependency tests not enabled.')
+    @testtools.skipUnless(
+        CONF.volume_feature_enabled.enable_volume_image_dep_tests,
+        reason='Volume/image dependency tests not enabled.')
     @decorators.idempotent_id('e6050452-06bd-4c7f-9912-45178c83e379')
     @utils.services('image', 'volume')
     def test_image_volume_dependencies_3(self):

@@ -24,7 +24,13 @@ cinder_option = [
                 help='Enable to run Cinder volume revert tests'),
     cfg.BoolOpt('volume_image_dep_tests',
                 default=True,
-                help='Run tests for dependencies between images and volumes')
+                help='Run tests for dependencies between images and volumes',
+                deprecated_for_removal=True,
+                deprecated_reason='Dependency test config setting '
+                '`volume_image_dep_tests` '
+                'in cinder-tempest-plugin is deprecated.Alternatively '
+                '`CONF.volume_feature_enabled.enable_volume_image_dep_tests` '
+                'can be used for dependency tests.')
 ]
 
 # The barbican service is discovered by config_tempest [1], and will appear

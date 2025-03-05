@@ -1,0 +1,6 @@
+deprecations:
+  - |
+    Dependency test config setting 'volume_image_dep_tests'
+    in cinder-tempest-plugin is deprecated.Alternatively tempest
+    `CONF.volume_feature_enabled.enable_volume_image_dep_tests` can be used
+    to for dependency tests.
