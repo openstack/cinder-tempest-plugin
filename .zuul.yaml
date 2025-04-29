@@ -23,9 +23,9 @@
         # As per the Tempest "Stable Branch Support Policy", Tempest will only
         # support the "Maintained" stable branches, so only jobs for the
         # current stable branches should be listed here.
+        - cinder-tempest-plugin-basic-2025-1
         - cinder-tempest-plugin-basic-2024-2
         - cinder-tempest-plugin-basic-2024-1
-        - cinder-tempest-plugin-basic-2023-2
         - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
@@ -36,9 +36,9 @@
         - cinder-tempest-plugin-cbak-ceph
     experimental:
       jobs:
+        - cinder-tempest-plugin-cbak-ceph-2025-1
         - cinder-tempest-plugin-cbak-ceph-2024-2
         - cinder-tempest-plugin-cbak-ceph-2024-1
-        - cinder-tempest-plugin-cbak-ceph-2023-2
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -268,6 +268,12 @@
     timeout: 10800
 
 - job:
+    name: cinder-tempest-plugin-cbak-ceph-2025-1
+    parent: cinder-tempest-plugin-cbak-ceph
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2025.1
+
+- job:
     name: cinder-tempest-plugin-cbak-ceph-2024-2
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-jammy
@@ -278,12 +284,6 @@
     parent: cinder-tempest-plugin-cbak-ceph
     nodeset: openstack-single-node-jammy
     override-checkout: stable/2024.1
-
-- job:
-    name: cinder-tempest-plugin-cbak-ceph-2023-2
-    parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-jammy
-    override-checkout: stable/2023.2
 
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
@@ -407,6 +407,12 @@
       - ^releasenotes/.*$
 
 - job:
+    name: cinder-tempest-plugin-basic-2025-1
+    parent: cinder-tempest-plugin-basic
+    nodeset: openstack-single-node-jammy
+    override-checkout: stable/2025.1
+
+- job:
     name: cinder-tempest-plugin-basic-2024-2
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-jammy
@@ -417,9 +423,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-jammy
     override-checkout: stable/2024.1
-
-- job:
-    name: cinder-tempest-plugin-basic-2023-2
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-jammy
-    override-checkout: stable/2023.2
