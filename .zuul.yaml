@@ -5,6 +5,7 @@
     check:
       jobs:
         - cinder-tempest-plugin-lvm-multiattach
+        - cinder-tempest-plugin-lvm-concurrency-tests
         - cinder-tempest-plugin-lvm-lio-barbican
         - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream:
             voting: false
@@ -90,6 +91,32 @@
       - ^doc/.*$
       - ^releasenotes/.*$
     timeout: 10800
+
+- job:
+    name: cinder-tempest-plugin-lvm-concurrency-tests
+    description: |
+      This job runs Cinder concurrency scenario tests from the cinder-tempest-plugin.
+      These tests involve parallel operations on volumes (e.g., backup creation, attachment),
+      which can put stress on system resources.
+
+      To avoid hitting resource limits, `tempest_concurrency` is set to 1, ensuring that
+      the tests themselves run in serial even though each test performs concurrent actions internally.
+    parent: devstack-tempest
+    required-projects:
+      - opendev.org/openstack/tempest
+      - opendev.org/openstack/cinder-tempest-plugin
+      - opendev.org/openstack/cinder
+    vars:
+      tempest_concurrency: 1
+      tox_envlist: all
+      tempest_test_regex: 'cinder_tempest_plugin.scenario.test_volume_concurrency'
+      tempest_plugins:
+        - cinder-tempest-plugin
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            volume-feature-enabled:
+              concurrency_tests: True
 
 - job:
     name: cinder-tempest-plugin-lvm-barbican-base-abstract
