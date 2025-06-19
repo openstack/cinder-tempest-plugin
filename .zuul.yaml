@@ -4,6 +4,7 @@
       - tempest-plugin-jobs
     check:
       jobs:
+        - cinder-tempest-plugin-multi-ceph-replication
         - cinder-tempest-plugin-lvm-multiattach
         - cinder-tempest-plugin-lvm-concurrency-tests
         - cinder-tempest-plugin-lvm-lio-barbican
@@ -317,6 +318,28 @@
     # Python 3.12 is the default on noble
     nodeset: openstack-single-node-noble
     override-checkout: stable/2025.1
+
+- job:
+    name: cinder-tempest-plugin-multi-ceph-replication
+    parent: devstack-plugin-ceph-tempest-py3-base
+    description: |
+      Multi-Ceph backend job for testing Cinder volume replication.
+      Runs cinder-tempest-plugin scenario tests with replication enabled
+      using a multi-backend Ceph configuration.
+    vars:
+      tox_envlist: all
+      tempest_concurrency: 1
+      devstack_localrc:
+        MULTI_CEPH: true
+        ENABLE_CEPH_RBD_MIRROR: true
+      tempest_test_regex: '^cinder_tempest_plugin\.(scenario|api\.volume\.admin)\.test_volume_replication'
+      tempest_plugins:
+        - cinder-tempest-plugin
+      devstack_local_conf:
+        test-config:
+          $TEMPEST_CONFIG:
+            volume-feature-enabled:
+              replication: True
 
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
