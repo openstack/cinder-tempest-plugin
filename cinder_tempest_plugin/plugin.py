@@ -47,6 +47,9 @@ class CinderTempestPlugin(plugins.TempestPlugin):
         config.register_opt_group(conf, config.volume_feature_group,
                                   project_config.cinder_option)
 
+        config.register_opt_group(conf, config.volume_group,
+                                  project_config.concurrency_option)
+
         # Define the 'barbican' service_available option, but only if the
         # barbican_tempest_plugin isn't present. It also defines the option,
         # and we need to avoid a duplicate option registration.
@@ -62,6 +65,7 @@ class CinderTempestPlugin(plugins.TempestPlugin):
         """
         opt_lists = [
             (config.volume_feature_group.name, project_config.cinder_option),
+            (config.volume_group.name, project_config.concurrency_option),
         ]
 
         if 'barbican_tempest_plugin' not in sys.modules:

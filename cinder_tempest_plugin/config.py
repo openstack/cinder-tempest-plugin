@@ -30,7 +30,10 @@ cinder_option = [
                 '`volume_image_dep_tests` '
                 'in cinder-tempest-plugin is deprecated.Alternatively '
                 '`CONF.volume_feature_enabled.enable_volume_image_dep_tests` '
-                'can be used for dependency tests.')
+                'can be used for dependency tests.'),
+    cfg.BoolOpt('concurrency_tests',
+                default=False,
+                help='Enable or disable running concurrency tests.'),
 ]
 
 # The barbican service is discovered by config_tempest [1], and will appear
@@ -43,4 +46,10 @@ barbican_service_option = [
     cfg.BoolOpt('barbican',
                 default=False,
                 help="Whether or not barbican is expected to be available"),
+]
+
+concurrency_option = [
+    cfg.IntOpt('concurrent_resource_count',
+               default=5,
+               help='Number of resources to create concurrently.'),
 ]
