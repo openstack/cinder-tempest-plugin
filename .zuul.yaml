@@ -14,7 +14,9 @@
         # do about this, which should be at the March 2023 virtual PTG.
         - cinder-tempest-plugin-lvm-tgt-barbican:
             voting: false
-        - cinder-tempest-plugin-lvm-lio-barbican-fips:
+        - cinder-tempest-plugin-lvm-lio-barbican-fips-2025-1:
+            voting: false
+        - cinder-tempest-plugin-lvm-lio-barbican-fips-py311:
             voting: false
         - cinder-tempest-plugin-lvm-nvmet-barbican
         - nova-ceph-multistore:
@@ -352,6 +354,26 @@
     vars:
       nslookup_target: 'opendev.org'
       tempest_exclude_regex: 'test_encrypted_cinder_volumes_cryptsetup'
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-fips-2025-1
+    parent: cinder-tempest-plugin-lvm-lio-barbican-fips
+    override-checkout: stable/2025.1
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-fips-py311
+    parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
+    nodeset: devstack-single-node-centos-9-stream
+    description: |
+      This job configures Cinder with LVM, LIO, barbican and
+      runs tempest tests and cinderlib tests on CentOS Stream 9
+      under FIPS mode
+    vars:
+      enable_fips: True
+      nslookup_target: 'opendev.org'
+      tempest_exclude_regex: 'test_encrypted_cinder_volumes_cryptsetup'
+      devstack_localrc:
+        PYTHON3_VERSION: 3.11
 
 - job:
     name: cinder-tempest-plugin-lvm-nvmet-barbican
