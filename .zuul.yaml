@@ -7,7 +7,9 @@
         - cinder-tempest-plugin-lvm-multiattach
         - cinder-tempest-plugin-lvm-concurrency-tests
         - cinder-tempest-plugin-lvm-lio-barbican
-        - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream:
+        - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-py311:
+            voting: false
+        - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-2025-1:
             voting: false
         # FIXME: the tgt job is broken on jammy, and we may be removing tgt
         # support anyway.  So make it non-voting until we figure out what to
@@ -344,6 +346,22 @@
       runs tempest tests and cinderlib tests on CentOS Stream 9.
 
 - job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-2025-1
+    parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
+    override-checkout: stable/2025.1
+
+- job:
+    name: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-py311
+    parent: cinder-tempest-plugin-lvm-lio-barbican
+    nodeset: devstack-single-node-centos-9-stream
+    description: |
+      This jobs configures Cinder with LVM, LIO, barbican and
+      runs tempest tests and cinderlib tests on CentOS Stream 9.
+    vars:
+      devstack_localrc:
+        PYTHON3_VERSION: 3.11
+
+- job:
     name: cinder-tempest-plugin-lvm-lio-barbican-fips
     parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
     description: |
@@ -362,7 +380,7 @@
 
 - job:
     name: cinder-tempest-plugin-lvm-lio-barbican-fips-py311
-    parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
+    parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-py311
     nodeset: devstack-single-node-centos-9-stream
     description: |
       This job configures Cinder with LVM, LIO, barbican and
