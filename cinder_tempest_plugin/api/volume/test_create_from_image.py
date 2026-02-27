@@ -41,12 +41,7 @@ class VolumeAndVolumeTypeFromImageTest(base.BaseVolumeAdminTest):
         volume_type_name = 'vol-type-for-6e9266ff-a917-4dd5-aa4a-c36e59e7a2a6'
         description = ('Generic volume_type for test '
                        '6e9266ff-a917-4dd5-aa4a-c36e59e7a2a6')
-        proto = CONF.volume.storage_protocol
-        vendor = CONF.volume.vendor_name
-        extra_specs = {"storage_protocol": proto,
-                       "vendor_name": vendor}
         kwargs = {'description': description,
-                  'extra_specs': extra_specs,
                   'os-volume-type-access:is_public': True}
         volume_type = self.create_volume_type(name=volume_type_name,
                                               **kwargs)
