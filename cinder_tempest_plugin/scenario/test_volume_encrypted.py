@@ -76,8 +76,7 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
                                   **kwargs)
 
     @decorators.idempotent_id('5bb622ab-5060-48a8-8840-d589a548b9e4')
-    @utils.services('volume')
-    @utils.services('compute')
+    @utils.services('compute', 'volume')
     def test_attach_cloned_encrypted_volume(self):
 
         """This test case attempts to reproduce the following steps:
@@ -111,9 +110,7 @@ class TestEncryptedCinderVolumes(manager.EncryptionScenarioTest,
         self.attach_detach_volume(server, volume_source)
 
     @decorators.idempotent_id('5bb622ab-5060-48a8-8840-d589a548b7e4')
-    @utils.services('volume')
-    @utils.services('compute')
-    @utils.services('image')
+    @utils.services('volume', 'compute', 'image')
     def test_boot_cloned_encrypted_volume(self):
 
         """This test case attempts to reproduce the following steps:
