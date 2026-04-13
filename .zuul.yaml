@@ -306,7 +306,7 @@
 - job:
     name: cinder-tempest-plugin-cbak-ceph-2025-1
     parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-jammy
+    nodeset: openstack-single-node-noble
     override-checkout: stable/2025.1
 
 - job:
@@ -481,7 +481,7 @@
 - job:
     name: cinder-tempest-plugin-basic-2025-1
     parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-jammy
+    nodeset: openstack-single-node-noble
     override-checkout: stable/2025.1
 
 - job:
