@@ -492,9 +492,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-noble
     override-checkout: stable/2025.1
-
-- job:
-    name: cinder-tempest-plugin-basic-2024-2
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-jammy
-    override-checkout: stable/2024.2
