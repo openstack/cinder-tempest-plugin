@@ -1,0 +1,41 @@
+[build-system]
+requires = ["pbr>=7.0.0"]
+build-backend = "pbr.build"
+
+[project]
+name = "cinder-tempest-plugin"
+description = "Tempest plugin tests for Cinder."
+authors = [
+    {name = "OpenStack", email = "openstack-discuss@lists.openstack.org"},
+    ]
+readme = {file = "README.rst", content-type = "text/x-rst"}
+license = {text = "Apache-2.0"}
+dynamic = ["version", "dependencies"]
+requires-python = ">=3.10"
+classifiers = [
+    "Environment :: OpenStack",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    ]
+
+[project.urls]
+Homepage = "https://cinder.openstack.org"
+Repository = "https://opendev.org/openstack/cinder-tempest-plugin"
+Bugs = "https://launchpad.net/cinder-tempest-plugin"
+
+[tool.setuptools]
+packages = [
+    "cinder_tempest_plugin"
+    ]
+
+[project.entry-points."tempest.test_plugins"]
+cinder_tests = "cinder_tempest_plugin.plugin:CinderTempestPlugin"
