@@ -31,7 +31,6 @@
         - cinder-tempest-plugin-basic-2026-1
         - cinder-tempest-plugin-basic-2025-2
         - cinder-tempest-plugin-basic-2025-1
-        - cinder-tempest-plugin-basic-2024-2
         - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
@@ -45,7 +44,6 @@
         - cinder-tempest-plugin-cbak-ceph-2026-1
         - cinder-tempest-plugin-cbak-ceph-2025-2
         - cinder-tempest-plugin-cbak-ceph-2025-1
-        - cinder-tempest-plugin-cbak-ceph-2024-2
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -302,26 +300,23 @@
 - job:
     name: cinder-tempest-plugin-cbak-ceph-2026-1
     parent: cinder-tempest-plugin-cbak-ceph
+    # Python 3.12 is the default on noble
     nodeset: openstack-single-node-noble
     override-checkout: stable/2026.1
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph-2025-2
     parent: cinder-tempest-plugin-cbak-ceph
+    # Python 3.12 is the default on noble
     nodeset: openstack-single-node-noble
     override-checkout: stable/2025.2
 
 - job:
     name: cinder-tempest-plugin-cbak-ceph-2025-1
     parent: cinder-tempest-plugin-cbak-ceph
+    # Python 3.12 is the default on noble
     nodeset: openstack-single-node-noble
     override-checkout: stable/2025.1
-
-- job:
-    name: cinder-tempest-plugin-cbak-ceph-2024-2
-    parent: cinder-tempest-plugin-cbak-ceph
-    nodeset: openstack-single-node-jammy
-    override-checkout: stable/2024.2
 
 # variant for pre-Ussuri branches (no volume revert for Ceph),
 # should this job be used on those branches
