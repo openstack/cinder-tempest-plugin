@@ -4,20 +4,23 @@
       - tempest-plugin-jobs
     check:
       jobs:
-        - cinder-tempest-plugin-multi-ceph-replication
+        # TODO(tkajinam): The job is made non-voting due to bug 2164769 and also
+        # pending devstack-plugin-ceph change to stabilize installation
+        # https://review.opendev.org/c/openstack/devstack-plugin-ceph/+/1009412
+        - cinder-tempest-plugin-multi-ceph-replication:
+            voting: false
         - cinder-tempest-plugin-lvm-multiattach
-        - cinder-tempest-plugin-lvm-concurrency-tests
+        # TODO(tkajinam): This job is made non-voting due to
+        # https://bugs.launchpad.net/cinder-tempest-plugin/+bug/2171624
+        - cinder-tempest-plugin-lvm-concurrency-tests:
+            voting: false
         - cinder-tempest-plugin-lvm-lio-barbican
         - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-py311:
-            voting: false
-        - cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-2025-1:
             voting: false
         # FIXME: the tgt job is broken on jammy, and we may be removing tgt
         # support anyway.  So make it non-voting until we figure out what to
         # do about this, which should be at the March 2023 virtual PTG.
         - cinder-tempest-plugin-lvm-tgt-barbican:
-            voting: false
-        - cinder-tempest-plugin-lvm-lio-barbican-fips-2025-1:
             voting: false
         - cinder-tempest-plugin-lvm-lio-barbican-fips-py311:
             voting: false
@@ -31,7 +34,6 @@
         # current stable branches should be listed here.
         - cinder-tempest-plugin-basic-2026-1
         - cinder-tempest-plugin-basic-2025-2
-        - cinder-tempest-plugin-basic-2025-1
         - cinder-tempest-plugin-protection-functional
     gate:
       jobs:
@@ -44,7 +46,6 @@
       jobs:
         - cinder-tempest-plugin-cbak-ceph-2026-1
         - cinder-tempest-plugin-cbak-ceph-2025-2
-        - cinder-tempest-plugin-cbak-ceph-2025-1
 
 - job:
     name: cinder-tempest-plugin-protection-functional
@@ -313,13 +314,6 @@
     override-checkout: stable/2025.2
 
 - job:
-    name: cinder-tempest-plugin-cbak-ceph-2025-1
-    parent: cinder-tempest-plugin-cbak-ceph
-    # Python 3.12 is the default on noble
-    nodeset: openstack-single-node-noble
-    override-checkout: stable/2025.1
-
-- job:
     name: cinder-tempest-plugin-multi-ceph-replication
     parent: devstack-plugin-ceph-tempest-py3-base
     description: |
@@ -372,11 +366,6 @@
       runs tempest tests and cinderlib tests on CentOS Stream 9.
 
 - job:
-    name: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-2025-1
-    parent: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream
-    override-checkout: stable/2025.1
-
-- job:
     name: cinder-tempest-plugin-lvm-lio-barbican-centos-9-stream-py311
     parent: cinder-tempest-plugin-lvm-lio-barbican
     nodeset: devstack-single-node-centos-9-stream
@@ -398,11 +387,6 @@
     vars:
       nslookup_target: 'opendev.org'
       tempest_exclude_regex: 'test_encrypted_cinder_volumes_cryptsetup'
-
-- job:
-    name: cinder-tempest-plugin-lvm-lio-barbican-fips-2025-1
-    parent: cinder-tempest-plugin-lvm-lio-barbican-fips
-    override-checkout: stable/2025.1
 
 - job:
     name: cinder-tempest-plugin-lvm-lio-barbican-fips-py311
@@ -509,9 +493,3 @@
     parent: cinder-tempest-plugin-basic
     nodeset: openstack-single-node-noble
     override-checkout: stable/2025.2
-
-- job:
-    name: cinder-tempest-plugin-basic-2025-1
-    parent: cinder-tempest-plugin-basic
-    nodeset: openstack-single-node-noble
-    override-checkout: stable/2025.1
